@@ -1,11 +1,10 @@
 """
 Core RAG System Components
-"""
 
-from .chunking import SmartChunker
-from .generation import LLMHandler
-from .retrieval import VectorStore
-from .utils import get_logger, ResponseCache, EmbeddingCache
+Uses lazy imports to avoid creating heavyweight singletons (ChromaDB, LLM
+handlers, embedding models, document processor) when subpackages like
+rag_system.core.registry.models are imported for type-only use.
+"""
 
 __all__ = [
     'SmartChunker',
@@ -13,5 +12,30 @@ __all__ = [
     'VectorStore',
     'get_logger',
     'ResponseCache',
-    'EmbeddingCache'
+    'EmbeddingCache',
+    'DocRegistry',
+    'IngestionPipeline',
 ]
+
+
+def __getattr__(name):
+    """Lazy-load heavy components on first access."""
+    if name == 'SmartChunker':
+        from .chunking import SmartChunker
+        return SmartChunker
+    if name == 'LLMHandler':
+        from .generation import LLMHandler
+        return LLMHandler
+    if name == 'VectorStore':
+        from .retrieval import VectorStore
+        return VectorStore
+    if name in ('get_logger', 'ResponseCache', 'EmbeddingCache'):
+        from .utils import get_logger, ResponseCache, EmbeddingCache
+        return {'get_logger': get_logger, 'ResponseCache': ResponseCache, 'EmbeddingCache': EmbeddingCache}[name]
+    if name == 'DocRegistry':
+        from .registry import DocRegistry
+        return DocRegistry
+    if name == 'IngestionPipeline':
+        from .ingestion import IngestionPipeline
+        return IngestionPipeline
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

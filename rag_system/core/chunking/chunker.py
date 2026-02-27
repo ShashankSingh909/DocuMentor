@@ -1,6 +1,6 @@
 from typing import List, Dict, Optional
-from langchain.text_splitter import RecursiveCharacterTextSplitter, Language
-from langchain.text_splitter import MarkdownHeaderTextSplitter
+from langchain_text_splitters import RecursiveCharacterTextSplitter, Language
+from langchain_text_splitters import MarkdownHeaderTextSplitter
 import hashlib
 import re
 import json

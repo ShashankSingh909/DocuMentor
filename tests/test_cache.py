@@ -63,7 +63,7 @@ class TestResponseCache:
         query1 = "Test Query"
         query2 = "test query"
         search_results = [{"content": "test"}]
-        response = "response"
+        response = "This is a sufficiently long response for caching"
 
         cache.set(query1, search_results, response)
         result = cache.get(query2, search_results)
@@ -101,7 +101,7 @@ class TestResponseCache:
         """Test that cache can be cleared"""
         query = "test query"
         search_results = [{"content": "test"}]
-        response = "response"
+        response = "This is a sufficiently long response for caching"
 
         cache.set(query, search_results, response)
         assert len(cache.cache) > 0

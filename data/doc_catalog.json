@@ -1,0 +1,92 @@
+[
+  {
+    "id": "python",
+    "name": "Python 3.13.5",
+    "category": "language",
+    "version": "3.13.5",
+    "icon": "\ud83d\udc0d",
+    "source_type": "preembedded_file",
+    "source_paths": ["data/preembedded/python_comprehensive.txt"]
+  },
+  {
+    "id": "fastapi",
+    "name": "FastAPI",
+    "category": "framework",
+    "version": null,
+    "icon": "\u26a1",
+    "source_type": "preembedded_file",
+    "source_paths": ["data/preembedded/fastapi_comprehensive.txt"]
+  },
+  {
+    "id": "django",
+    "name": "Django 5.2",
+    "category": "framework",
+    "version": "5.2",
+    "icon": "\ud83c\udfb8",
+    "source_type": "preembedded_file",
+    "source_paths": ["data/preembedded/django_comprehensive.txt", "data/preembedded/django_guide.txt"]
+  },
+  {
+    "id": "react_nextjs",
+    "name": "React & Next.js",
+    "category": "framework",
+    "version": null,
+    "icon": "\u269b\ufe0f",
+    "source_type": "preembedded_file",
+    "source_paths": ["data/preembedded/react_nextjs_comprehensive.txt", "data/preembedded/react_guide.txt"]
+  },
+  {
+    "id": "nodejs",
+    "name": "Node.js",
+    "category": "runtime",
+    "version": null,
+    "icon": "\ud83d\udfe2",
+    "source_type": "preembedded_file",
+    "source_paths": ["data/preembedded/nodejs_comprehensive.txt"]
+  },
+  {
+    "id": "postgresql",
+    "name": "PostgreSQL",
+    "category": "database",
+    "version": null,
+    "icon": "\ud83d\udc18",
+    "source_type": "preembedded_file",
+    "source_paths": ["data/preembedded/postgresql_comprehensive.txt"]
+  },
+  {
+    "id": "mongodb",
+    "name": "MongoDB",
+    "category": "database",
+    "version": null,
+    "icon": "\ud83c\udf43",
+    "source_type": "preembedded_file",
+    "source_paths": ["data/preembedded/mongodb_comprehensive.txt"]
+  },
+  {
+    "id": "typescript",
+    "name": "TypeScript",
+    "category": "language",
+    "version": null,
+    "icon": "\ud83d\udcd8",
+    "source_type": "preembedded_file",
+    "source_paths": ["data/preembedded/typescript_comprehensive.txt"]
+  },
+  {
+    "id": "langchain",
+    "name": "LangChain",
+    "category": "framework",
+    "version": null,
+    "icon": "\ud83d\udd17",
+    "source_type": "preembedded_file",
+    "source_paths": ["data/preembedded/langchain_comprehensive.txt", "data/preembedded/langchain_guide.txt"]
+  },
+  {
+    "id": "docker",
+    "name": "Docker",
+    "category": "tool",
+    "version": null,
+    "icon": "\ud83d\udc33",
+    "source_type": "scraped_json",
+    "source_paths": ["data/scraped/docker_docs.json"]
+  }
+]

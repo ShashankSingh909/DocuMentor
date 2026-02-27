@@ -138,6 +138,15 @@ METRICS_SUBSYSTEM_LLM = "llm"
 LATENCY_BUCKETS = [0.01, 0.05, 0.1, 0.25, 0.5, 1.0, 2.5, 5.0, 10.0]
 
 # ============================================
+# Registry & Ingestion Constants
+# ============================================
+REGISTRY_CATALOG_FILE = "doc_catalog.json"
+REGISTRY_STATE_FILE = "registry_state.json"
+MAX_SCRAPE_PAGES = 10
+SCRAPE_TIMEOUT = 30  # seconds per URL
+INGESTION_BATCH_LOG_INTERVAL = 50  # log progress every N chunks
+
+# ============================================
 # Error Messages
 # ============================================
 ERROR_FILE_TOO_LARGE = f"File size exceeds maximum allowed size of {MAX_FILE_SIZE_MB}MB"

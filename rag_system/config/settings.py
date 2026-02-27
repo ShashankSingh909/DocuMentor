@@ -6,7 +6,7 @@ Using Pydantic for settings - it's pretty nice for validation and env vars
 from typing import List, Optional
 from pathlib import Path
 from pydantic_settings import BaseSettings
-from pydantic import Field
+from pydantic import Field, field_validator
 
 
 class Settings(BaseSettings):
@@ -20,6 +20,16 @@ class Settings(BaseSettings):
     host: str = Field(default="127.0.0.1", description="Server host")
     port: int = Field(default=8501, description="Server port")
     debug: bool = Field(default=False, description="Debug mode - don't use in production!")
+
+    @field_validator("debug", mode="before")
+    @classmethod
+    def coerce_debug(cls, v):
+        """Handle non-boolean DEBUG env values (e.g. 'release') gracefully."""
+        if isinstance(v, bool):
+            return v
+        if isinstance(v, str):
+            return v.lower() in ("true", "1", "yes")
+        return bool(v)
 
     # CORS Configuration
     # added common dev ports here
@@ -79,6 +89,10 @@ class Settings(BaseSettings):
     # Pre-embedded Documents
     preembedded_docs_dir: str = Field(default="./data/preembedded", description="Pre-embedded documents directory")
     enable_source_filtering: bool = Field(default=True, description="Enable filtering by document source")
+
+    # Registry Configuration
+    registry_catalog_path: str = Field(default="./data/doc_catalog.json", description="Path to documentation catalog")
+    registry_state_path: str = Field(default="./data/registry_state.json", description="Path to registry state file")
 
     # Logging Configuration
     log_level: str = Field(default="INFO", description="Logging level")

@@ -24,20 +24,8 @@ import io
 import time
 from pathlib import Path
 
-from rag_system.core import SmartChunker, VectorStore
-from rag_system.core.processing import document_processor
-from rag_system.core.generation.llm_handler import enhanced_llm_handler
-from rag_system.core.search import web_search_provider
+from rag_system.core.registry.models import IngestionStatus
 from rag_system.config import get_settings
-from rag_system.api.middleware.auth import verify_api_key, optional_verify_api_key
-from rag_system.api.middleware.validation import (
-    validate_query,
-    validate_search_k,
-    validate_temperature,
-    validate_max_tokens,
-    validate_file_upload,
-    sanitize_filename,
-)
 from rag_system.core.utils.metrics import (
     track_request_duration,
     track_llm_request,
@@ -58,19 +46,6 @@ from rag_system.core.constants import (
 from rag_system.core.utils.logger import get_logger
 
 logger = get_logger(__name__)
-
-# Technology mapping for enhanced filtering
-TECHNOLOGY_MAPPING = {
-    'python': 'Python 3.13.5',
-    'fastapi': 'FastAPI',
-    'django': 'Django 5.2',
-    'react_nextjs': 'React & Next.js',
-    'nodejs': 'Node.js',
-    'postgresql': 'PostgreSQL',
-    'mongodb': 'MongoDB',
-    'typescript': 'TypeScript',
-    'langchain': 'LangChain'
-}
 
 # Enhanced Pydantic models for API v2
 class EnhancedQuestionRequest(BaseModel):
@@ -124,6 +99,13 @@ class TechnologyStatsResponse(BaseModel):
 def create_enhanced_fastapi_app() -> FastAPI:
     """Create and configure enhanced FastAPI application v2 with production features"""
 
+    # Deferred imports — these create heavyweight singletons (ChromaDB, LLM providers,
+    # embedding models, etc.) and must not run at module import time.
+    from rag_system.core import SmartChunker, VectorStore, DocRegistry, IngestionPipeline
+    from rag_system.core.processing import document_processor
+    from rag_system.core.generation.llm_handler import enhanced_llm_handler
+    from rag_system.core.search import web_search_provider
+
     # Initialize components
     settings = get_settings()
 
@@ -152,6 +134,19 @@ def create_enhanced_fastapi_app() -> FastAPI:
     # Initialize core components
     vector_store = VectorStore()
     chunker = SmartChunker()
+    registry = DocRegistry()
+    ingestion_pipeline = IngestionPipeline(
+        vector_store=vector_store,
+        chunker=chunker,
+        document_processor=document_processor,
+        registry=registry,
+    )
+
+    def get_technology_mapping():
+        """Dynamic technology mapping from registry (replaces hardcoded dict)."""
+        return registry.get_all_technology_mapping()
+
+    TECHNOLOGY_MAPPING = get_technology_mapping()
 
     logger.info("FastAPI application initialized with production features")
     logger.info(f"Authentication: {'Enabled' if settings.api_key else 'Disabled'}")
@@ -282,7 +277,7 @@ def create_enhanced_fastapi_app() -> FastAPI:
 
     @app.post("/ask/enhanced", response_model=EnhancedQuestionResponse, tags=["Enhanced Q&A"])
     @limiter.limit(f"{RATE_LIMIT_QUERY}/minute")
-    async def ask_enhanced_question(http_request: Request, request: EnhancedQuestionRequest):
+    async def ask_enhanced_question(request: Request, body: EnhancedQuestionRequest):
         """Ask a question with enhanced features and filtering"""
         try:
             import time
@@ -292,58 +287,58 @@ def create_enhanced_fastapi_app() -> FastAPI:
             combined_filter = {}
 
             # Add technology filter
-            if request.technology_filter and request.technology_filter in TECHNOLOGY_MAPPING:
+            if body.technology_filter and body.technology_filter in TECHNOLOGY_MAPPING:
                 combined_filter = {
                     "$and": [
-                        {"technology": request.technology_filter},
+                        {"technology": body.technology_filter},
                         {"source": "comprehensive_docs"}
                     ]
                 }
 
             # Add source filter
-            if request.source_filter:
+            if body.source_filter:
                 if "source" not in combined_filter:
-                    combined_filter["source"] = {"$in": request.source_filter}
+                    combined_filter["source"] = {"$in": body.source_filter}
 
             filter_dict = combined_filter if combined_filter else None
 
             # Enhanced search with overlap
             search_results = []
-            if request.response_mode != "web_only":
+            if body.response_mode != "web_only":
                 search_results = vector_store.search(
-                    request.question,
-                    k=request.search_k + request.chunk_overlap,
+                    body.question,
+                    k=body.search_k + body.chunk_overlap,
                     filter_dict=filter_dict
                 )
 
             # Add web search if enabled
-            if request.enable_web_search:
-                web_results = web_search_provider.search_web(request.question, max_results=3)
+            if body.enable_web_search:
+                web_results = web_search_provider.search_web(body.question, max_results=3)
                 search_results.extend(web_results)
 
             # Generate enhanced response based on mode
-            if request.response_mode == "code_generation":
+            if body.response_mode == "code_generation":
                 # Enhanced code generation
                 tech_context = ""
-                if request.technology_filter:
-                    tech_name = TECHNOLOGY_MAPPING.get(request.technology_filter, request.technology_filter)
+                if body.technology_filter:
+                    tech_name = TECHNOLOGY_MAPPING.get(body.technology_filter, body.technology_filter)
                     tech_context = f"Focus on {tech_name} implementation. "
 
-                code_prompt = f"{tech_context}Provide a complete, working code implementation for: {request.question}"
+                code_prompt = f"{tech_context}Provide a complete, working code implementation for: {body.question}"
                 answer = enhanced_llm_handler.generate_code(code_prompt, "python", search_results[:5])
 
                 # Format code response
                 if "```" not in answer:
                     answer = f"```python\n{answer}\n```"
 
-            elif request.response_mode == "detailed_sources":
+            elif body.response_mode == "detailed_sources":
                 # Generate answer with detailed source focus
-                detailed_prompt = f"Provide a comprehensive answer with specific references to documentation. Include examples and detailed explanations. Question: {request.question}"
+                detailed_prompt = f"Provide a comprehensive answer with specific references to documentation. Include examples and detailed explanations. Question: {body.question}"
                 answer = enhanced_llm_handler.generate_answer(detailed_prompt, search_results)
 
             else:  # smart_answer
                 # Enhanced smart answer
-                smart_prompt = f"Provide a clear, practical answer with examples when helpful. Be comprehensive but concise. Question: {request.question}"
+                smart_prompt = f"Provide a clear, practical answer with examples when helpful. Be comprehensive but concise. Question: {body.question}"
                 answer = enhanced_llm_handler.generate_answer(smart_prompt, search_results)
 
             response_time = time.time() - start_time
@@ -354,12 +349,12 @@ def create_enhanced_fastapi_app() -> FastAPI:
                 response_time=response_time,
                 provider_used=enhanced_llm_handler.current_provider,
                 source_count=len(search_results),
-                technology_context=TECHNOLOGY_MAPPING.get(request.technology_filter) if request.technology_filter else None,
-                response_mode=request.response_mode,
+                technology_context=TECHNOLOGY_MAPPING.get(body.technology_filter) if body.technology_filter else None,
+                response_mode=body.response_mode,
                 search_metadata={
                     "filter_used": filter_dict is not None,
-                    "overlap_chunks": request.chunk_overlap,
-                    "web_search_enabled": request.enable_web_search
+                    "overlap_chunks": body.chunk_overlap,
+                    "web_search_enabled": body.enable_web_search
                 }
             )
 
@@ -368,40 +363,40 @@ def create_enhanced_fastapi_app() -> FastAPI:
 
     @app.post("/generate-code/enhanced", tags=["Enhanced Code Generation"])
     @limiter.limit(f"{RATE_LIMIT_GENERATION}/minute")
-    async def generate_enhanced_code(http_request: Request, request: EnhancedCodeGenerationRequest):
+    async def generate_enhanced_code(request: Request, body: EnhancedCodeGenerationRequest):
         """Generate code with enhanced technology context"""
         try:
             # Get enhanced context
             context = []
-            if request.include_context:
-                search_query = f"{request.language} {request.prompt}"
-                if request.technology:
-                    search_query = f"{request.technology} {search_query}"
-                    filter_dict = {"technology": request.technology} if request.technology in TECHNOLOGY_MAPPING else None
+            if body.include_context:
+                search_query = f"{body.language} {body.prompt}"
+                if body.technology:
+                    search_query = f"{body.technology} {search_query}"
+                    filter_dict = {"technology": body.technology} if body.technology in TECHNOLOGY_MAPPING else None
                 else:
                     filter_dict = None
 
                 context = vector_store.search(search_query, k=5, filter_dict=filter_dict)
 
             # Enhanced code generation prompt
-            if request.technology and request.technology in TECHNOLOGY_MAPPING:
-                tech_name = TECHNOLOGY_MAPPING[request.technology]
-                enhanced_prompt = f"Generate {request.style} {request.language} code for {tech_name}. Request: {request.prompt}"
+            if body.technology and body.technology in TECHNOLOGY_MAPPING:
+                tech_name = TECHNOLOGY_MAPPING[body.technology]
+                enhanced_prompt = f"Generate {body.style} {body.language} code for {tech_name}. Request: {body.prompt}"
             else:
-                enhanced_prompt = f"Generate {request.style} {request.language} code. Request: {request.prompt}"
+                enhanced_prompt = f"Generate {body.style} {body.language} code. Request: {body.prompt}"
 
             # Generate code
             code = enhanced_llm_handler.generate_code(
                 enhanced_prompt,
-                request.language,
+                body.language,
                 context
             )
 
             return {
                 "code": code,
-                "language": request.language,
-                "technology": TECHNOLOGY_MAPPING.get(request.technology) if request.technology else "General",
-                "style": request.style,
+                "language": body.language,
+                "technology": TECHNOLOGY_MAPPING.get(body.technology) if body.technology else "General",
+                "style": body.style,
                 "context_used": len(context),
                 "provider": enhanced_llm_handler.current_provider
             }
@@ -411,11 +406,11 @@ def create_enhanced_fastapi_app() -> FastAPI:
 
     @app.post("/technology-query", tags=["Technology Queries"])
     @limiter.limit(f"{RATE_LIMIT_QUERY}/minute")
-    async def technology_specific_query(http_request: Request, request: TechnologyFilterRequest):
+    async def technology_specific_query(request: Request, body: TechnologyFilterRequest):
         """Query with technology-specific filtering and context"""
         try:
-            if request.technology not in TECHNOLOGY_MAPPING:
-                raise HTTPException(status_code=400, detail=f"Technology '{request.technology}' not supported")
+            if body.technology not in TECHNOLOGY_MAPPING:
+                raise HTTPException(status_code=400, detail=f"Technology '{body.technology}' not supported")
 
             import time
             start_time = time.time()
@@ -423,29 +418,29 @@ def create_enhanced_fastapi_app() -> FastAPI:
             # Technology-specific filter
             tech_filter = {
                 "$and": [
-                    {"technology": request.technology},
+                    {"technology": body.technology},
                     {"source": "comprehensive_docs"}
                 ]
             }
 
             # Search with technology filter
             search_results = vector_store.search(
-                request.question,
+                body.question,
                 k=8,
                 filter_dict=tech_filter
             )
 
             # Generate technology-focused response
-            tech_name = TECHNOLOGY_MAPPING[request.technology]
+            tech_name = TECHNOLOGY_MAPPING[body.technology]
 
-            if request.mode == "code":
-                prompt = f"Provide {tech_name} code implementation for: {request.question}"
+            if body.mode == "code":
+                prompt = f"Provide {tech_name} code implementation for: {body.question}"
                 answer = enhanced_llm_handler.generate_code(prompt, "python", search_results)
-            elif request.mode == "detailed":
-                prompt = f"Provide detailed {tech_name} documentation and examples for: {request.question}"
+            elif body.mode == "detailed":
+                prompt = f"Provide detailed {tech_name} documentation and examples for: {body.question}"
                 answer = enhanced_llm_handler.generate_answer(prompt, search_results)
             else:  # smart
-                prompt = f"Explain how to {request.question} using {tech_name}. Include practical examples."
+                prompt = f"Explain how to {body.question} using {tech_name}. Include practical examples."
                 answer = enhanced_llm_handler.generate_answer(prompt, search_results)
 
             response_time = time.time() - start_time
@@ -453,7 +448,7 @@ def create_enhanced_fastapi_app() -> FastAPI:
             return {
                 "answer": answer,
                 "technology": tech_name,
-                "mode": request.mode,
+                "mode": body.mode,
                 "sources": search_results,
                 "response_time": response_time,
                 "source_count": len(search_results)
@@ -467,14 +462,14 @@ def create_enhanced_fastapi_app() -> FastAPI:
     # Include all original endpoints for backward compatibility
     @app.post("/ask", response_model=EnhancedQuestionResponse, tags=["Q&A"])
     @limiter.limit(f"{RATE_LIMIT_QUERY}/minute")
-    async def ask_question_legacy(http_request: Request, request: EnhancedQuestionRequest):
+    async def ask_question_legacy(request: Request, body: EnhancedQuestionRequest):
         """Legacy ask endpoint - redirects to enhanced version"""
-        return await ask_enhanced_question(http_request, request)
+        return await ask_enhanced_question(request, body)
 
     @app.post("/upload", tags=["Documents"])
     @limiter.limit(f"{RATE_LIMIT_UPLOAD}/minute")
     async def upload_document(
-        http_request: Request,
+        request: Request,
         file: UploadFile = File(...),
         source: str = Form(default="api_upload")
     ):
@@ -535,7 +530,137 @@ def create_enhanced_fastapi_app() -> FastAPI:
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Upload failed: {str(e)}")
 
+    # ── Documentation Management Endpoints ──────────────────
+
+    @app.get("/docs/catalog", tags=["Documentation Management"])
+    async def get_documentation_catalog():
+        """Get all available documentation sources with their ingestion status."""
+        sources = registry.get_all_sources()
+        return {
+            "total": len(sources),
+            "sources": [
+                {
+                    "id": s.id,
+                    "name": s.name,
+                    "category": s.category,
+                    "icon": s.icon,
+                    "source_type": s.source_type.value,
+                    "status": s.status.value,
+                    "chunk_count": s.chunk_count,
+                    "last_ingested": s.last_ingested.isoformat() if s.last_ingested else None,
+                    "error_message": s.error_message,
+                }
+                for s in sources
+            ],
+        }
+
+    @app.get("/docs/ingested", tags=["Documentation Management"])
+    async def get_ingested_technologies():
+        """Get only technologies that have been successfully ingested."""
+        ingested = registry.get_ingested_sources()
+        return {
+            "total": len(ingested),
+            "technologies": [
+                {"id": s.id, "name": s.name, "icon": s.icon, "chunk_count": s.chunk_count}
+                for s in ingested
+            ],
+        }
+
+    @app.get("/docs/{doc_id}/status", tags=["Documentation Management"])
+    async def get_doc_status(doc_id: str):
+        """Get ingestion status for a specific documentation source."""
+        source = registry.get_source(doc_id)
+        if not source:
+            raise HTTPException(status_code=404, detail=f"Documentation source '{doc_id}' not found")
+        return {
+            "id": source.id,
+            "name": source.name,
+            "status": source.status.value,
+            "chunk_count": source.chunk_count,
+            "last_ingested": source.last_ingested.isoformat() if source.last_ingested else None,
+            "error_message": source.error_message,
+        }
+
+    @app.post("/docs/{doc_id}/ingest", tags=["Documentation Management"])
+    async def trigger_ingestion(doc_id: str):
+        """Trigger ingestion of a documentation source."""
+        source = registry.get_source(doc_id)
+        if not source:
+            raise HTTPException(status_code=404, detail=f"Documentation source '{doc_id}' not found")
+
+        if source.status == IngestionStatus.IN_PROGRESS:
+            raise HTTPException(status_code=409, detail=f"Ingestion already in progress for '{doc_id}'")
+
+        result = ingestion_pipeline.ingest_source(doc_id)
+        if result['success']:
+            return result
+        else:
+            raise HTTPException(status_code=500, detail=result['message'])
+
+    @app.delete("/docs/{doc_id}", tags=["Documentation Management"])
+    async def remove_documentation(doc_id: str):
+        """Remove a documentation source from the knowledge base."""
+        source = registry.get_source(doc_id)
+        if not source:
+            raise HTTPException(status_code=404, detail=f"Documentation source '{doc_id}' not found")
+
+        result = ingestion_pipeline.remove_source(doc_id)
+        if result['success']:
+            return result
+        else:
+            raise HTTPException(status_code=500, detail=result['message'])
+
+    @app.get("/docs/{doc_id}/progress", tags=["Documentation Management"])
+    async def get_ingestion_progress(doc_id: str):
+        """Get ingestion progress for a source (for polling during background ingestion)."""
+        return ingestion_pipeline.get_progress(doc_id)
+
+    class CustomDocRequest(BaseModel):
+        name: str = Field(..., description="Display name for the documentation")
+        url: Optional[str] = Field(default=None, description="URL to scrape documentation from")
+        category: str = Field(default="custom", description="Category (framework, language, tool, etc.)")
+
+    @app.post("/docs/custom", tags=["Documentation Management"])
+    async def add_custom_documentation(request: CustomDocRequest):
+        """Add a custom documentation source from a URL and ingest it."""
+        if not request.url:
+            raise HTTPException(status_code=400, detail="URL is required for custom documentation")
+
+        import re
+        doc_id = re.sub(r'[^a-z0-9_]', '_', request.name.lower().strip()).strip('_')
+        doc_id = re.sub(r'_+', '_', doc_id)
+
+        result = ingestion_pipeline.ingest_from_url(
+            url=request.url,
+            name=request.name,
+            doc_id=doc_id,
+            category=request.category,
+        )
+
+        if result['success']:
+            return {"doc_id": doc_id, **result}
+        else:
+            raise HTTPException(status_code=500, detail=result['message'])
+
     return app
 
-# Create the enhanced FastAPI app instance
-app = create_enhanced_fastapi_app()
+# App instance created lazily — not at import time.
+# This prevents booting heavy dependencies (ChromaDB, LLM handlers, etc.) when
+# subpackages like rag_system.api.middleware are imported in unit tests.
+_app = None
+
+
+def get_app():
+    """Get or create the FastAPI app singleton."""
+    global _app
+    if _app is None:
+        _app = create_enhanced_fastapi_app()
+    return _app
+
+
+# For backwards compatibility and uvicorn string-based lookup ("rag_system.api.server:app")
+# we expose `app` as a module-level property via __getattr__.
+def __getattr__(name):
+    if name == "app":
+        return get_app()
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")

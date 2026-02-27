@@ -36,7 +36,18 @@ class ChromaVectorStore:
         # Initialize client with proper locking
         with self.lock:
             logger.debug("Acquired lock for ChromaDB initialization")
-            self.client = chromadb.PersistentClient(path=self.persist_directory)
+            try:
+                self.client = chromadb.PersistentClient(path=self.persist_directory)
+            except Exception as e:
+                # Corrupted or incompatible persistent DB — wipe and retry
+                logger.warning(
+                    f"ChromaDB initialization failed ({e}). "
+                    f"Removing corrupted DB at {self.persist_directory} and recreating."
+                )
+                import shutil
+                shutil.rmtree(self.persist_directory, ignore_errors=True)
+                Path(self.persist_directory).mkdir(parents=True, exist_ok=True)
+                self.client = chromadb.PersistentClient(path=self.persist_directory)
 
         # Get optimized embedding function with caching
         try:
@@ -62,8 +73,8 @@ class ChromaVectorStore:
                 name=self.collection_name
             )
             logger.info(f"Loaded collection: {self.collection.count()} docs")
-        except ValueError:
-            # Collection doesn't exist, create it
+        except (ValueError, Exception) as get_err:
+            # Collection doesn't exist, create it (handles both ValueError and NotFoundError)
             try:
                 self.collection = self.client.create_collection(
                     name=self.collection_name,

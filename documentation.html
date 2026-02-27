@@ -1,0 +1,1534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DocuMentor - Complete Project Documentation</title>
+    <style>
+        :root {
+            --bg: #0f172a;
+            --surface: #1e293b;
+            --surface2: #334155;
+            --border: #475569;
+            --text: #e2e8f0;
+            --text-muted: #94a3b8;
+            --accent: #818cf8;
+            --accent2: #a78bfa;
+            --green: #34d399;
+            --orange: #fb923c;
+            --red: #f87171;
+            --blue: #60a5fa;
+            --cyan: #22d3ee;
+            --yellow: #fbbf24;
+            --code-bg: #0d1117;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+        }
+
+        /* ── Sidebar Navigation ── */
+        nav {
+            position: fixed; top: 0; left: 0; width: 270px; height: 100vh;
+            background: var(--surface); border-right: 1px solid var(--border);
+            overflow-y: auto; padding: 1.5rem 1rem; z-index: 100;
+        }
+        nav::-webkit-scrollbar { width: 4px; }
+        nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+        nav .logo { color: var(--accent); font-size: 1.3rem; font-weight: 700; margin-bottom: 0.3rem; }
+        nav .logo-sub { color: var(--text-muted); font-size: 0.75rem; margin-bottom: 1.5rem; display: block; }
+        nav .nav-group { margin-bottom: 1rem; }
+        nav .nav-group-title {
+            color: var(--accent2); font-size: 0.7rem; text-transform: uppercase;
+            letter-spacing: 1.5px; font-weight: 700; margin-bottom: 0.4rem; padding-left: 0.5rem;
+        }
+        nav ul { list-style: none; }
+        nav ul li a {
+            color: var(--text-muted); text-decoration: none; font-size: 0.82rem;
+            display: block; padding: 0.25rem 0.5rem; border-radius: 6px; transition: all 0.15s;
+        }
+        nav ul li a:hover { background: var(--surface2); color: var(--text); }
+
+        /* ── Main Content ── */
+        main {
+            margin-left: 270px; padding: 2.5rem 3rem; max-width: 960px;
+        }
+        h1 {
+            font-size: 2.2rem; font-weight: 800; color: var(--accent);
+            margin-bottom: 0.5rem; border-bottom: 2px solid var(--border); padding-bottom: 0.8rem;
+        }
+        h2 {
+            font-size: 1.5rem; font-weight: 700; color: var(--accent2);
+            margin: 2.5rem 0 1rem; padding-bottom: 0.4rem; border-bottom: 1px solid var(--border);
+        }
+        h3 { font-size: 1.15rem; font-weight: 600; color: var(--cyan); margin: 1.5rem 0 0.6rem; }
+        h4 { font-size: 1rem; font-weight: 600; color: var(--green); margin: 1.2rem 0 0.5rem; }
+        p { margin-bottom: 0.9rem; color: var(--text); }
+        a { color: var(--blue); text-decoration: none; }
+        a:hover { text-decoration: underline; }
+        strong { color: var(--text); }
+        ul, ol { margin: 0.5rem 0 1rem 1.5rem; }
+        li { margin: 0.3rem 0; }
+
+        /* ── Code Blocks ── */
+        pre {
+            background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+            padding: 1rem 1.2rem; overflow-x: auto; margin: 0.8rem 0 1.2rem;
+            font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.82rem; line-height: 1.6;
+        }
+        code {
+            font-family: 'Cascadia Code', 'Fira Code', 'Consolas', monospace;
+            font-size: 0.85em;
+        }
+        p code, li code {
+            background: var(--surface2); padding: 0.15rem 0.4rem; border-radius: 4px;
+            color: var(--cyan); font-size: 0.82em;
+        }
+
+        /* ── Tables ── */
+        table {
+            width: 100%; border-collapse: collapse; margin: 0.8rem 0 1.2rem;
+            font-size: 0.88rem;
+        }
+        th {
+            background: var(--surface2); color: var(--accent); font-weight: 600;
+            text-align: left; padding: 0.6rem 0.8rem; border: 1px solid var(--border);
+        }
+        td {
+            padding: 0.5rem 0.8rem; border: 1px solid var(--border);
+            background: var(--surface);
+        }
+
+        /* ── Info / Warning Boxes ── */
+        .info-box {
+            background: var(--surface); border-left: 4px solid var(--blue);
+            padding: 1rem 1.2rem; border-radius: 0 8px 8px 0; margin: 1rem 0;
+        }
+        .warn-box {
+            background: var(--surface); border-left: 4px solid var(--orange);
+            padding: 1rem 1.2rem; border-radius: 0 8px 8px 0; margin: 1rem 0;
+        }
+        .success-box {
+            background: var(--surface); border-left: 4px solid var(--green);
+            padding: 1rem 1.2rem; border-radius: 0 8px 8px 0; margin: 1rem 0;
+        }
+
+        /* ── Flow Diagram (ASCII) ── */
+        .flow-diagram {
+            background: var(--code-bg); border: 1px solid var(--border); border-radius: 8px;
+            padding: 1.5rem; font-family: monospace; font-size: 0.8rem;
+            white-space: pre; overflow-x: auto; margin: 1rem 0 1.5rem;
+            line-height: 1.4; color: var(--cyan);
+        }
+
+        /* ── Badge ── */
+        .badge {
+            display: inline-block; padding: 0.15rem 0.6rem; border-radius: 12px;
+            font-size: 0.72rem; font-weight: 600;
+        }
+        .badge-green { background: #065f46; color: var(--green); }
+        .badge-blue { background: #1e3a5f; color: var(--blue); }
+        .badge-orange { background: #78350f; color: var(--orange); }
+        .badge-red { background: #7f1d1d; color: var(--red); }
+
+        /* ── Section Dividers ── */
+        hr { border: none; border-top: 1px solid var(--border); margin: 2rem 0; }
+
+        /* ── Responsive ── */
+        @media (max-width: 900px) {
+            nav { display: none; }
+            main { margin-left: 0; padding: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- ════════════════════════ SIDEBAR ════════════════════════ -->
+<nav>
+    <div class="logo">DocuMentor</div>
+    <span class="logo-sub">AI Documentation Assistant</span>
+
+    <div class="nav-group">
+        <div class="nav-group-title">Getting Started</div>
+        <ul>
+            <li><a href="#overview">Overview</a></li>
+            <li><a href="#what-is-rag">What is RAG?</a></li>
+            <li><a href="#architecture">Architecture</a></li>
+            <li><a href="#tech-stack">Tech Stack</a></li>
+            <li><a href="#quick-start">Quick Start</a></li>
+            <li><a href="#project-structure">Project Structure</a></li>
+            <li><a href="#configuration">Configuration</a></li>
+        </ul>
+    </div>
+
+    <div class="nav-group">
+        <div class="nav-group-title">Data Layer</div>
+        <ul>
+            <li><a href="#data-overview">Data Overview</a></li>
+            <li><a href="#doc-catalog">Doc Catalog</a></li>
+            <li><a href="#data-types">Source Types</a></li>
+            <li><a href="#preembedded">Pre-embedded Data</a></li>
+            <li><a href="#scraped-data">Scraped JSON Data</a></li>
+        </ul>
+    </div>
+
+    <div class="nav-group">
+        <div class="nav-group-title">RAG Pipeline</div>
+        <ul>
+            <li><a href="#pipeline-overview">Pipeline Overview</a></li>
+            <li><a href="#registry">Document Registry</a></li>
+            <li><a href="#doc-processor">Document Processor</a></li>
+            <li><a href="#chunker">Smart Chunker</a></li>
+            <li><a href="#vector-store">Vector Store</a></li>
+            <li><a href="#ingestion-pipeline">Ingestion Pipeline</a></li>
+            <li><a href="#llm-handler">LLM Handler</a></li>
+            <li><a href="#web-search">Web Search</a></li>
+        </ul>
+    </div>
+
+    <div class="nav-group">
+        <div class="nav-group-title">Backend API</div>
+        <ul>
+            <li><a href="#api-overview">API Overview</a></li>
+            <li><a href="#api-endpoints">All Endpoints</a></li>
+            <li><a href="#api-models">Request/Response Models</a></li>
+            <li><a href="#api-factory">App Factory Pattern</a></li>
+        </ul>
+    </div>
+
+    <div class="nav-group">
+        <div class="nav-group-title">Frontend</div>
+        <ul>
+            <li><a href="#frontend-overview">Frontend Overview</a></li>
+            <li><a href="#frontend-api-client">API Client</a></li>
+            <li><a href="#frontend-types">TypeScript Types</a></li>
+            <li><a href="#frontend-hooks">Custom Hooks</a></li>
+            <li><a href="#frontend-dashboard">Dashboard Page</a></li>
+            <li><a href="#frontend-qa">Q&amp;A Page</a></li>
+        </ul>
+    </div>
+
+    <div class="nav-group">
+        <div class="nav-group-title">Advanced</div>
+        <ul>
+            <li><a href="#lazy-imports">Lazy Import Pattern</a></li>
+            <li><a href="#chromadb-recovery">ChromaDB Recovery</a></li>
+            <li><a href="#caching">Caching System</a></li>
+            <li><a href="#testing">Testing</a></li>
+            <li><a href="#deployment">Deployment</a></li>
+            <li><a href="#troubleshooting">Troubleshooting</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- ════════════════════════ MAIN CONTENT ════════════════════════ -->
+<main>
+
+<!-- ──────────────────── OVERVIEW ──────────────────── -->
+<h1 id="overview">DocuMentor Documentation</h1>
+<p>
+    <strong>DocuMentor</strong> is an AI-powered documentation assistant that helps developers search and understand
+    programming documentation through natural language questions. It uses <strong>Retrieval-Augmented Generation (RAG)</strong>
+    to fetch relevant documentation chunks and generate accurate, cited answers.
+</p>
+<p>
+    This document covers <em>every component</em> of the system in detail. After reading it, you should be able to
+    understand how data flows from raw documentation files all the way to a generated answer on the user's screen.
+</p>
+
+<div class="info-box">
+    <strong>Two ways to interact:</strong>
+    <ul style="margin-top: 0.4rem;">
+        <li><strong>Web UI</strong> &mdash; Next.js frontend at <code>http://localhost:3000</code> (Dashboard + Q&amp;A pages)</li>
+        <li><strong>REST API</strong> &mdash; FastAPI backend at <code>http://localhost:8100</code> (all endpoints available programmatically)</li>
+    </ul>
+</div>
+
+<hr>
+
+<!-- ──────────────────── WHAT IS RAG ──────────────────── -->
+<h2 id="what-is-rag">What is RAG? (Retrieval-Augmented Generation)</h2>
+<p>
+    Before diving into the code, let's understand the core concept. RAG is a technique that <strong>combines a search engine
+    with a language model</strong>. Instead of relying solely on the LLM's training data, RAG first <em>retrieves</em>
+    relevant text from a knowledge base, then <em>augments</em> the LLM prompt with that text so it can
+    <em>generate</em> an accurate, grounded answer.
+</p>
+
+<h3>Why RAG?</h3>
+<ul>
+    <li><strong>Accuracy</strong> &mdash; Answers are backed by actual documentation, not hallucinated facts</li>
+    <li><strong>Citations</strong> &mdash; Every answer includes the source chunks that informed it</li>
+    <li><strong>Up-to-date</strong> &mdash; Knowledge base can be updated without retraining the LLM</li>
+    <li><strong>Domain-specific</strong> &mdash; Works with any documentation you ingest</li>
+</ul>
+
+<h3>RAG in DocuMentor (3 Phases)</h3>
+<div class="flow-diagram">
+Phase 1: INGESTION (one-time, per documentation source)
+═══════════════════════════════════════════════════════
+  Raw Docs ──▶ Document Processor ──▶ Smart Chunker ──▶ Embeddings ──▶ ChromaDB
+  (files,       (extract text,        (split into        (384-dim      (persistent
+   URLs,         clean HTML,           ~500 token         vectors)       vector
+   JSON)         detect code)          chunks)                          database)
+
+Phase 2: RETRIEVAL (every time a user asks a question)
+═══════════════════════════════════════════════════════
+  User Question ──▶ Embed Query ──▶ ChromaDB Search ──▶ Top-K Chunks
+                     (same model)    (cosine similarity)  (most relevant)
+
+Phase 3: GENERATION (producing the final answer)
+═══════════════════════════════════════════════════════
+  System Prompt + Retrieved Chunks + User Question ──▶ LLM ──▶ Answer + Citations
+                                                       (Ollama / OpenAI / Gemini)
+</div>
+
+<hr>
+
+<!-- ──────────────────── ARCHITECTURE ──────────────────── -->
+<h2 id="architecture">System Architecture</h2>
+<p>DocuMentor is a two-tier application: a <strong>Python backend</strong> (FastAPI) and a <strong>TypeScript frontend</strong> (Next.js).</p>
+
+<div class="flow-diagram">
+┌─────────────────────────────────────────────────────────────┐
+│                     USER'S BROWSER                          │
+│                                                             │
+│   ┌─────────────────┐         ┌──────────────────────┐      │
+│   │   Dashboard      │         │   Q&A Interface       │     │
+│   │   (port 3000)    │         │   (port 3000)         │     │
+│   │   /dashboard     │         │   /qa                  │    │
+│   └────────┬─────────┘         └──────────┬────────────┘    │
+└────────────┼──────────────────────────────┼─────────────────┘
+             │ HTTP (fetch)                 │ HTTP (fetch)
+             ▼                              ▼
+┌─────────────────────────────────────────────────────────────┐
+│                  FastAPI Backend (port 8100)                 │
+│                  rag_system/api/server.py                    │
+│                                                             │
+│   /docs/catalog    /docs/{id}/ingest    /question           │
+│   /docs/ingested   /docs/{id}/progress  /generate-code      │
+│   /docs/{id}/remove /upload             /status             │
+│   /docs/custom     /providers           /providers/switch    │
+│   /technologies    /docs/{id}/status                        │
+├─────────────────────────────────────────────────────────────┤
+│                    Core RAG Engine                           │
+│                                                             │
+│  ┌──────────┐  ┌───────────┐  ┌──────────┐  ┌───────────┐  │
+│  │ Registry │  │ Ingestion │  │ Vector   │  │ LLM       │  │
+│  │          │  │ Pipeline  │  │ Store    │  │ Handler   │  │
+│  └──────────┘  └───────────┘  └──────────┘  └───────────┘  │
+│  ┌──────────┐  ┌───────────┐  ┌──────────┐                 │
+│  │ Chunker  │  │ Doc       │  │ Web      │                 │
+│  │          │  │ Processor │  │ Search   │                 │
+│  └──────────┘  └───────────┘  └──────────┘                 │
+├─────────────────────────────────────────────────────────────┤
+│                    Data / Storage                            │
+│                                                             │
+│  data/doc_catalog.json     data/chromadb/                   │
+│  data/registry_state.json  data/cache/                      │
+│  data/preembedded/         data/embeddings_cache/           │
+│  data/scraped/             data/uploads/                    │
+└─────────────────────────────────────────────────────────────┘
+</div>
+
+<hr>
+
+<!-- ──────────────────── TECH STACK ──────────────────── -->
+<h2 id="tech-stack">Tech Stack</h2>
+
+<h3>Backend (Python)</h3>
+<table>
+    <tr><th>Component</th><th>Technology</th><th>Purpose</th></tr>
+    <tr><td>Web Framework</td><td>FastAPI + Uvicorn</td><td>REST API with async support, auto-generated OpenAPI docs</td></tr>
+    <tr><td>Vector Database</td><td>ChromaDB (PersistentClient)</td><td>Store and search document embeddings on disk</td></tr>
+    <tr><td>Embedding Model</td><td>all-MiniLM-L6-v2 (sentence-transformers)</td><td>Convert text to 384-dimensional vectors</td></tr>
+    <tr><td>LLM (default)</td><td>Ollama &mdash; gemma2:2b</td><td>Local LLM for answer generation (no API key needed)</td></tr>
+    <tr><td>LLM (optional)</td><td>OpenAI GPT / Google Gemini</td><td>Cloud LLMs for higher quality answers</td></tr>
+    <tr><td>Web Scraping</td><td>Firecrawl / DuckDuckGo</td><td>Augment answers with live web results</td></tr>
+    <tr><td>Configuration</td><td>Pydantic Settings + .env</td><td>Type-safe settings from environment variables</td></tr>
+    <tr><td>Testing</td><td>pytest + pytest-asyncio</td><td>Comprehensive test suite (167 tests)</td></tr>
+</table>
+
+<h3>Frontend (TypeScript)</h3>
+<table>
+    <tr><th>Component</th><th>Technology</th><th>Purpose</th></tr>
+    <tr><td>Framework</td><td>Next.js 14 (App Router)</td><td>React framework with file-based routing</td></tr>
+    <tr><td>UI Components</td><td>shadcn/ui + Radix</td><td>Accessible, styled component library</td></tr>
+    <tr><td>Styling</td><td>Tailwind CSS</td><td>Utility-first CSS framework</td></tr>
+    <tr><td>Icons</td><td>Lucide React</td><td>Consistent icon library</td></tr>
+    <tr><td>Theme</td><td>next-themes</td><td>Dark/light mode toggle with persistence</td></tr>
+</table>
+
+<hr>
+
+<!-- ──────────────────── QUICK START ──────────────────── -->
+<h2 id="quick-start">Quick Start</h2>
+
+<h3>Prerequisites</h3>
+<ul>
+    <li>Python 3.10+</li>
+    <li>Node.js 18+ and npm</li>
+    <li>Ollama (for local LLM) &mdash; or OpenAI/Gemini API key</li>
+</ul>
+
+<h3>Step 1: Clone and Install Backend</h3>
+<pre>
+git clone https://github.com/your-username/DocuMentor.git
+cd DocuMentor
+pip install -r requirements.txt
+</pre>
+
+<h3>Step 2: Install Frontend</h3>
+<pre>
+cd frontend
+npm install
+cd ..
+</pre>
+
+<h3>Step 3: Configure Environment</h3>
+<pre>
+cp .env.example .env
+# Edit .env with your settings (see Configuration section below)
+</pre>
+
+<h3>Step 4: Start Ollama (if using local LLM)</h3>
+<pre>
+ollama pull gemma2:2b
+ollama serve
+</pre>
+
+<h3>Step 5: Launch Everything</h3>
+<pre>
+python launcher.py
+</pre>
+<p>This starts both the FastAPI backend (port 8100) and Next.js frontend (port 3000).</p>
+
+<div class="success-box">
+    <strong>You're running!</strong> Open <code>http://localhost:3000</code> in your browser.
+    Go to <strong>/dashboard</strong> to ingest documentation, then <strong>/qa</strong> to ask questions.
+</div>
+
+<hr>
+
+<!-- ──────────────────── PROJECT STRUCTURE ──────────────────── -->
+<h2 id="project-structure">Project Structure</h2>
+<pre>
+DocuMentor/
+├── launcher.py                  # Starts FastAPI + Next.js dev servers
+├── api_server.py                # Uvicorn entry point for FastAPI only
+├── main.py                      # Info/help entry point
+├── requirements.txt             # Python dependencies
+├── .env.example                 # Environment variable template
+│
+├── frontend/                    # Next.js TypeScript frontend
+│   ├── package.json
+│   ├── next.config.ts
+│   ├── tailwind.config.ts
+│   ├── components.json          # shadcn/ui config
+│   └── src/
+│       ├── app/
+│       │   ├── layout.tsx       # Root layout (Navbar + ThemeProvider)
+│       │   ├── page.tsx         # Landing page
+│       │   ├── dashboard/
+│       │   │   └── page.tsx     # Admin dashboard
+│       │   └── qa/
+│       │       └── page.tsx     # Q&A chat interface
+│       ├── components/
+│       │   ├── ui/              # shadcn auto-generated components
+│       │   ├── layout/          # Navbar.tsx, ThemeProvider.tsx
+│       │   ├── dashboard/       # DocCard, CatalogGrid, AddUrlForm, ...
+│       │   └── qa/              # ChatInterface, MessageBubble, ...
+│       ├── lib/
+│       │   ├── api.ts           # All fetch calls to FastAPI backend
+│       │   ├── types.ts         # TypeScript types (mirrors Pydantic models)
+│       │   └── utils.ts         # Utility functions
+│       └── hooks/
+│           ├── useDocSources.ts # Catalog data + ingest/remove actions
+│           ├── useIngestion.ts  # Progress polling (1.5s interval)
+│           └── useChat.ts       # Chat state + message handling
+│
+├── rag_system/                  # Python backend
+│   ├── api/
+│   │   ├── __init__.py          # Lazy get_app() function
+│   │   └── server.py            # FastAPI app with all 17 endpoints
+│   ├── config/
+│   │   └── settings.py          # Pydantic Settings (env-based config)
+│   └── core/
+│       ├── __init__.py           # Lazy __getattr__ imports
+│       ├── constants.py          # All magic numbers & defaults
+│       ├── chunking/
+│       │   └── chunker.py        # SmartChunker (code-aware splitting)
+│       ├── generation/
+│       │   └── llm_handler.py    # EnhancedLLMHandler (multi-provider)
+│       ├── ingestion/
+│       │   └── pipeline.py       # IngestionPipeline orchestrator
+│       ├── processing/
+│       │   └── document_processor.py  # File parsing (PDF, MD, TXT, HTML, etc.)
+│       ├── registry/
+│       │   ├── models.py         # DocSource, IngestionStatus, DocSourceType
+│       │   └── registry.py       # DocRegistry (state management)
+│       ├── retrieval/
+│       │   └── vector_store.py   # ChromaVectorStore (ChromaDB wrapper)
+│       └── search/
+│           └── web_search.py     # WebSearchProvider (Firecrawl/DDG)
+│
+├── data/
+│   ├── doc_catalog.json          # 10 built-in documentation sources
+│   ├── registry_state.json       # Runtime ingestion state (auto-managed)
+│   ├── preembedded/              # Pre-bundled .txt documentation files
+│   ├── scraped/                  # Pre-scraped .json documentation files
+│   ├── uploads/                  # User-uploaded files
+│   ├── chromadb/                 # ChromaDB persistent storage
+│   ├── cache/                    # Response cache
+│   └── embeddings_cache/         # Embedding cache
+│
+└── tests/                        # Test suite (167 tests)
+    ├── conftest.py               # Shared fixtures
+    ├── test_api_endpoints.py     # API integration tests
+    ├── test_chunker.py           # Chunking logic tests
+    ├── test_vector_store.py      # Vector store tests
+    ├── test_registry.py          # Registry tests
+    ├── test_ingestion.py         # Ingestion pipeline tests
+    ├── test_llm_handler.py       # LLM handler tests
+    └── test_cache.py             # Cache tests
+</pre>
+
+<hr>
+
+<!-- ──────────────────── CONFIGURATION ──────────────────── -->
+<h2 id="configuration">Configuration</h2>
+<p>
+    All configuration is managed through environment variables, loaded via <code>rag_system/config/settings.py</code>
+    which uses Pydantic's <code>BaseSettings</code>. Copy <code>.env.example</code> to <code>.env</code> and edit as needed.
+</p>
+
+<h3>Environment Variables</h3>
+<table>
+    <tr><th>Variable</th><th>Default</th><th>Description</th></tr>
+    <tr><td><code>APP_DEBUG</code></td><td><code>false</code></td><td>Enable debug logging. Uses APP_DEBUG to avoid collision with Python's DEBUG</td></tr>
+    <tr><td><code>HOST</code></td><td><code>127.0.0.1</code></td><td>FastAPI bind host</td></tr>
+    <tr><td><code>PORT</code></td><td><code>8100</code></td><td>FastAPI bind port</td></tr>
+    <tr><td><code>CHROMADB_PATH</code></td><td><code>data/chromadb</code></td><td>Directory for ChromaDB persistent storage</td></tr>
+    <tr><td><code>EMBEDDING_MODEL</code></td><td><code>all-MiniLM-L6-v2</code></td><td>Sentence-transformers model for embeddings</td></tr>
+    <tr><td><code>LLM_PROVIDER</code></td><td><code>ollama</code></td><td>Which LLM to use: <code>ollama</code>, <code>openai</code>, or <code>gemini</code></td></tr>
+    <tr><td><code>LLM_MODEL</code></td><td><code>gemma2:2b</code></td><td>Model name for the chosen provider</td></tr>
+    <tr><td><code>OLLAMA_BASE_URL</code></td><td><code>http://localhost:11434</code></td><td>Ollama server URL</td></tr>
+    <tr><td><code>OPENAI_API_KEY</code></td><td><em>empty</em></td><td>OpenAI API key (if using openai provider)</td></tr>
+    <tr><td><code>GEMINI_API_KEY</code></td><td><em>empty</em></td><td>Google Gemini API key (if using gemini provider)</td></tr>
+    <tr><td><code>FIRECRAWL_API_KEY</code></td><td><em>empty</em></td><td>Firecrawl API key (for web scraping augmentation)</td></tr>
+    <tr><td><code>CHUNK_SIZE</code></td><td><code>500</code></td><td>Target tokens per chunk</td></tr>
+    <tr><td><code>CHUNK_OVERLAP</code></td><td><code>50</code></td><td>Overlapping tokens between consecutive chunks</td></tr>
+    <tr><td><code>DEFAULT_SEARCH_K</code></td><td><code>5</code></td><td>Number of chunks to retrieve per query</td></tr>
+</table>
+
+<div class="info-box">
+    <strong>Note on APP_DEBUG:</strong> We use <code>APP_DEBUG</code> instead of <code>DEBUG</code> because many Python
+    tools (e.g., Flask, asyncio) set their own <code>DEBUG</code> environment variable, which can cause type coercion
+    errors with Pydantic. The settings class has a <code>field_validator</code> that converts string values like
+    <code>"true"</code> and <code>"1"</code> to boolean.
+</div>
+
+<h3>Frontend Configuration</h3>
+<p>Create <code>frontend/.env.local</code>:</p>
+<pre>
+NEXT_PUBLIC_API_URL=http://127.0.0.1:8100
+</pre>
+<p>If not set, the frontend API client defaults to <code>http://127.0.0.1:8100</code>.</p>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--                     DATA LAYER                        -->
+<!-- ══════════════════════════════════════════════════════ -->
+
+<h2 id="data-overview">Data Layer Overview</h2>
+<p>
+    The <code>data/</code> directory is DocuMentor's knowledge base. It holds the catalog of available documentation
+    sources, pre-processed documentation files, the vector database, and caches. Understanding this layer is key
+    to understanding how information enters the system.
+</p>
+
+<h2 id="doc-catalog">Document Catalog (<code>data/doc_catalog.json</code>)</h2>
+<p>
+    This JSON file defines <strong>all available documentation sources</strong>. Each entry describes one documentation
+    source that can be ingested into the system. Think of it as a "menu" of documentation that the system knows about.
+</p>
+
+<h3>Catalog Entry Structure</h3>
+<pre>
+{
+  "id": "python",                    // Unique identifier (used in API calls)
+  "name": "Python Documentation",    // Display name in the UI
+  "category": "Languages",           // Grouping category
+  "icon": "python",                  // Icon name for the frontend
+  "source_type": "preembedded_file", // How to fetch this documentation
+  "source_paths": [                  // Where the content lives
+    "data/preembedded/python_docs.txt"
+  ]
+}
+</pre>
+
+<h3>Built-in Documentation Sources (10 pre-bundled)</h3>
+<table>
+    <tr><th>ID</th><th>Name</th><th>Category</th><th>Source Type</th></tr>
+    <tr><td>python</td><td>Python Documentation</td><td>Languages</td><td>preembedded_file</td></tr>
+    <tr><td>javascript</td><td>JavaScript Documentation</td><td>Languages</td><td>preembedded_file</td></tr>
+    <tr><td>typescript</td><td>TypeScript Documentation</td><td>Languages</td><td>preembedded_file</td></tr>
+    <tr><td>react</td><td>React Documentation</td><td>Frameworks</td><td>scraped_json</td></tr>
+    <tr><td>nodejs</td><td>Node.js Documentation</td><td>Frameworks</td><td>scraped_json</td></tr>
+    <tr><td>fastapi</td><td>FastAPI Documentation</td><td>Frameworks</td><td>scraped_json</td></tr>
+    <tr><td>git</td><td>Git Documentation</td><td>Tools</td><td>preembedded_file</td></tr>
+    <tr><td>docker</td><td>Docker Documentation</td><td>Tools</td><td>scraped_json</td></tr>
+    <tr><td>sql</td><td>SQL Documentation</td><td>Databases</td><td>preembedded_file</td></tr>
+    <tr><td>mongodb</td><td>MongoDB Documentation</td><td>Databases</td><td>scraped_json</td></tr>
+</table>
+
+<h2 id="data-types">Source Types Explained</h2>
+
+<h3 id="preembedded">1. <code>preembedded_file</code></h3>
+<p>
+    Plain text files stored in <code>data/preembedded/</code>. These are the simplest source type &mdash; just
+    readable text that gets chunked and embedded directly.
+</p>
+<ul>
+    <li><strong>Format:</strong> Plain <code>.txt</code> files with documentation content</li>
+    <li><strong>Example:</strong> <code>data/preembedded/python_docs.txt</code></li>
+    <li><strong>Processing:</strong> Read file &rarr; chunk &rarr; embed &rarr; store</li>
+    <li><strong>Best for:</strong> Documentation you've manually curated or downloaded</li>
+</ul>
+
+<h3 id="scraped-data">2. <code>scraped_json</code></h3>
+<p>
+    Pre-scraped documentation stored as JSON in <code>data/scraped/</code>. These were fetched from documentation
+    websites and saved in a structured format.
+</p>
+<ul>
+    <li><strong>Format:</strong> JSON files with <code>title</code>, <code>url</code>, and <code>content</code> fields</li>
+    <li><strong>Example:</strong> <code>data/scraped/react_docs.json</code></li>
+    <li><strong>Processing:</strong> Parse JSON &rarr; extract content &rarr; chunk &rarr; embed &rarr; store</li>
+    <li><strong>Best for:</strong> Documentation pre-scraped from websites</li>
+</ul>
+
+<h3>3. <code>web_scrape</code></h3>
+<p>
+    Live URL scraping. When a user adds a URL via the Dashboard, the system fetches the page content at
+    ingest time using the Document Processor.
+</p>
+<ul>
+    <li><strong>Added via:</strong> Dashboard "Add URL" form or <code>POST /docs/custom</code> API</li>
+    <li><strong>Processing:</strong> Fetch URL &rarr; extract text &rarr; chunk &rarr; embed &rarr; store</li>
+    <li><strong>Best for:</strong> Adding specific documentation pages or articles</li>
+</ul>
+
+<h3>4. <code>file_upload</code></h3>
+<p>
+    User-uploaded files (PDF, Markdown, TXT, HTML, etc.) stored in <code>data/uploads/</code>.
+</p>
+<ul>
+    <li><strong>Added via:</strong> Dashboard file upload or <code>POST /upload</code> API</li>
+    <li><strong>Supported formats:</strong> .txt, .md, .pdf, .html, .htm, .json, .csv, .xml, .yaml, .yml, .rst, .py, .js, .ts, .java, .go, .rs</li>
+    <li><strong>Processing:</strong> Parse file &rarr; extract text &rarr; chunk &rarr; embed &rarr; store</li>
+</ul>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--                   RAG PIPELINE                        -->
+<!-- ══════════════════════════════════════════════════════ -->
+
+<h2 id="pipeline-overview">RAG Pipeline &mdash; Complete Walkthrough</h2>
+<p>
+    Now let's trace the entire data flow, from raw documentation to a generated answer.
+    Each subsection below covers one component in the pipeline.
+</p>
+
+<div class="flow-diagram">
+User clicks "Add" in Dashboard
+        │
+        ▼
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│  DocRegistry │────▶│  Ingestion   │────▶│  Document    │────▶│  Smart       │
+│              │     │  Pipeline    │     │  Processor   │     │  Chunker     │
+│ Tracks state │     │ Orchestrates │     │ Extracts text│     │ Splits text  │
+│ (not_started │     │ full flow    │     │ from files   │     │ into chunks  │
+│  in_progress │     │              │     │              │     │              │
+│  completed   │     │              │     │              │     │              │
+│  failed)     │     │              │     │              │     │              │
+└──────────────┘     └──────────────┘     └──────────────┘     └──────┬───────┘
+                                                                      │
+                                                                      ▼
+┌──────────────┐     ┌──────────────┐     ┌──────────────┐     ┌──────────────┐
+│  Answer +    │◀────│  LLM Handler │◀────│  Vector      │◀────│  Embedding   │
+│  Citations   │     │              │     │  Store       │     │  Function    │
+│              │     │ Generates    │     │              │     │              │
+│  Returned    │     │ answer from  │     │ ChromaDB     │     │ all-MiniLM-  │
+│  to user     │     │ chunks +     │     │ cosine       │     │ L6-v2        │
+│              │     │ question     │     │ similarity   │     │ 384-dim      │
+└──────────────┘     └──────────────┘     └──────────────┘     └──────────────┘
+</div>
+
+<!-- ── Registry ── -->
+<h2 id="registry">Document Registry</h2>
+<p><strong>File:</strong> <code>rag_system/core/registry/registry.py</code> (229 lines)</p>
+<p><strong>Models:</strong> <code>rag_system/core/registry/models.py</code></p>
+
+<p>
+    The <strong>DocRegistry</strong> is the system's state manager. It tracks which documentation sources
+    exist, which are ingested, and their current status. It is the single source of truth for document state.
+</p>
+
+<h3>Key Data Models</h3>
+<pre>
+class IngestionStatus(str, Enum):
+    NOT_STARTED = "not_started"   # Never been ingested
+    IN_PROGRESS = "in_progress"   # Currently being ingested
+    COMPLETED   = "completed"     # Successfully ingested
+    FAILED      = "failed"        # Ingestion failed with error
+
+class DocSourceType(str, Enum):
+    PREEMBEDDED_FILE = "preembedded_file"  # .txt in data/preembedded/
+    SCRAPED_JSON     = "scraped_json"      # .json in data/scraped/
+    WEB_SCRAPE       = "web_scrape"        # Live URL fetch
+    FILE_UPLOAD      = "file_upload"       # User-uploaded file
+
+class DocSource(BaseModel):
+    id: str                          # e.g., "python"
+    name: str                        # e.g., "Python Documentation"
+    category: str                    # e.g., "Languages"
+    icon: str                        # e.g., "python"
+    source_type: DocSourceType
+    source_paths: List[str]          # File paths or URLs
+    status: IngestionStatus          # Current state
+    chunk_count: int = 0             # Chunks in vector store
+    last_ingested: Optional[str]     # ISO timestamp
+    error_message: Optional[str]     # Error if failed
+</pre>
+
+<h3>How the Registry Works</h3>
+<ol>
+    <li><strong>Initialization:</strong> Reads <code>data/doc_catalog.json</code> to load all available doc sources</li>
+    <li><strong>State persistence:</strong> Saves runtime state (status, chunk counts, errors) to <code>data/registry_state.json</code></li>
+    <li><strong>State merge:</strong> On startup, merges catalog entries with saved state (so ingested sources stay marked as "completed")</li>
+    <li><strong>Dynamic additions:</strong> New sources added via URL or upload get appended to the registry at runtime</li>
+</ol>
+
+<h3>Key Methods</h3>
+<table>
+    <tr><th>Method</th><th>What it does</th></tr>
+    <tr><td><code>get_all_sources()</code></td><td>Returns all registered documentation sources</td></tr>
+    <tr><td><code>get_source(doc_id)</code></td><td>Returns a specific source by ID</td></tr>
+    <tr><td><code>get_ingested_sources()</code></td><td>Returns only sources with status=completed</td></tr>
+    <tr><td><code>update_status(doc_id, status, ...)</code></td><td>Updates a source's status, chunk count, error</td></tr>
+    <tr><td><code>add_custom_source(id, name, ...)</code></td><td>Registers a new doc source dynamically</td></tr>
+    <tr><td><code>remove_source(doc_id)</code></td><td>Removes a source from the registry</td></tr>
+</table>
+
+<!-- ── Document Processor ── -->
+<h2 id="doc-processor">Document Processor</h2>
+<p><strong>File:</strong> <code>rag_system/core/processing/document_processor.py</code> (451 lines)</p>
+
+<p>
+    The <strong>EnhancedDocumentProcessor</strong> is responsible for extracting text from various file formats.
+    It's the first step in the ingestion pipeline &mdash; turning raw files into clean text strings.
+</p>
+
+<h3>Supported File Formats</h3>
+<table>
+    <tr><th>Extension</th><th>Processing Method</th></tr>
+    <tr><td>.txt</td><td>Direct text read</td></tr>
+    <tr><td>.md</td><td>Markdown read (preserved for chunker)</td></tr>
+    <tr><td>.pdf</td><td>PDF text extraction (PyPDF2 or pdfplumber)</td></tr>
+    <tr><td>.html, .htm</td><td>HTML parsing with BeautifulSoup, strip tags</td></tr>
+    <tr><td>.json</td><td>JSON parsing, extract content fields</td></tr>
+    <tr><td>.csv</td><td>CSV row-by-row text extraction</td></tr>
+    <tr><td>.xml</td><td>XML text node extraction</td></tr>
+    <tr><td>.yaml, .yml</td><td>YAML to readable text</td></tr>
+    <tr><td>.rst</td><td>reStructuredText parsing</td></tr>
+    <tr><td>.py, .js, .ts, .java, .go, .rs</td><td>Source code (preserved as-is for code-aware chunking)</td></tr>
+</table>
+
+<h3>Special Handling: Scraped JSON</h3>
+<p>
+    For <code>scraped_json</code> sources, the processor expects a JSON array of objects with
+    <code>title</code>, <code>url</code>, and <code>content</code> fields. It concatenates these into
+    a single text string with section headers preserved.
+</p>
+
+<h3>URL Fetching</h3>
+<p>
+    For <code>web_scrape</code> sources, the processor fetches the URL content using <code>httpx</code>,
+    then parses the HTML response to extract readable text.
+</p>
+
+<!-- ── Smart Chunker ── -->
+<h2 id="chunker">Smart Chunker</h2>
+<p><strong>File:</strong> <code>rag_system/core/chunking/chunker.py</code> (375 lines)</p>
+
+<p>
+    The <strong>SmartChunker</strong> splits long documents into smaller, semantically meaningful chunks.
+    This is crucial because:
+</p>
+<ul>
+    <li>Embedding models work best with focused text segments (not entire documents)</li>
+    <li>Retrieved chunks need to be small enough to fit in the LLM's context window</li>
+    <li>Smaller chunks give more precise search results</li>
+</ul>
+
+<h3>Chunking Strategy</h3>
+<p>The chunker uses a <strong>hierarchical splitting</strong> approach:</p>
+<ol>
+    <li><strong>Code block detection:</strong> First, identify fenced code blocks (``` ... ```) and protect them from being split mid-block</li>
+    <li><strong>Header-based splitting:</strong> Split on Markdown headers (# , ## , ### ) to preserve logical sections</li>
+    <li><strong>Paragraph splitting:</strong> Within sections, split on double newlines (paragraph boundaries)</li>
+    <li><strong>Sentence splitting:</strong> If paragraphs are still too large, split on sentence boundaries</li>
+    <li><strong>Hard splitting:</strong> As a last resort, split on word boundaries at the token limit</li>
+</ol>
+
+<h3>Configuration</h3>
+<table>
+    <tr><th>Parameter</th><th>Default</th><th>Meaning</th></tr>
+    <tr><td><code>chunk_size</code></td><td>500 tokens</td><td>Target maximum tokens per chunk</td></tr>
+    <tr><td><code>chunk_overlap</code></td><td>50 tokens</td><td>Tokens of overlap between consecutive chunks (for context continuity)</td></tr>
+</table>
+
+<h3>Chunk Metadata</h3>
+<p>Every chunk produced by the SmartChunker includes metadata:</p>
+<pre>
+{
+  "technology": "python",              // Doc source ID (critical for filtering)
+  "source": "Python Documentation",   // Human-readable source name
+  "chunk_index": 0,                   // Position in the document
+  "total_chunks": 42                  // Total chunks from this document
+}
+</pre>
+
+<div class="warn-box">
+    <strong>Important Convention:</strong> All chunks <strong>must</strong> include <code>technology</code> metadata
+    set to the doc source ID. This is how the vector store filters search results by technology. Without it,
+    technology-specific search will not work.
+</div>
+
+<!-- ── Vector Store ── -->
+<h2 id="vector-store">Vector Store (ChromaDB)</h2>
+<p><strong>File:</strong> <code>rag_system/core/retrieval/vector_store.py</code> (~400 lines)</p>
+
+<p>
+    The <strong>ChromaVectorStore</strong> wraps ChromaDB to provide persistent vector storage and similarity search.
+    It converts text chunks into 384-dimensional vectors using the <code>all-MiniLM-L6-v2</code> embedding model
+    and stores them on disk.
+</p>
+
+<h3>How Embeddings Work</h3>
+<p>
+    An <strong>embedding</strong> is a fixed-length vector of numbers that captures the <em>meaning</em> of a text.
+    Similar texts produce vectors that are close together in vector space. When a user asks a question, we:
+</p>
+<ol>
+    <li>Convert the question text into a 384-dimensional vector (using the same model)</li>
+    <li>Search the database for stored vectors closest to the question vector (cosine similarity)</li>
+    <li>Return the text chunks associated with those closest vectors</li>
+</ol>
+
+<h3>CachedEmbeddingFunction</h3>
+<p>
+    The vector store uses a <code>CachedEmbeddingFunction</code> that wraps <code>sentence-transformers</code>.
+    It caches computed embeddings to <code>data/embeddings_cache/</code> so re-ingesting the same text
+    doesn't recompute embeddings (saves time on startup).
+</p>
+
+<h3>Key Methods</h3>
+<table>
+    <tr><th>Method</th><th>What it does</th></tr>
+    <tr><td><code>add_documents(texts, metadatas, ids)</code></td><td>Embed and store chunks in ChromaDB</td></tr>
+    <tr><td><code>search(query, k, filter)</code></td><td>Find top-K most similar chunks to a query</td></tr>
+    <tr><td><code>delete_by_technology(doc_id)</code></td><td>Remove all chunks for a specific doc source</td></tr>
+    <tr><td><code>get_chunk_count(doc_id)</code></td><td>Count how many chunks exist for a doc source</td></tr>
+    <tr><td><code>get_all_technologies()</code></td><td>List all unique technology values in the store</td></tr>
+</table>
+
+<h3>ChromaDB Filter Pattern</h3>
+<p>When searching for technology-specific results:</p>
+<pre>
+# Search only in Python documentation
+results = vector_store.search(
+    query="How do list comprehensions work?",
+    k=5,
+    filter={"technology": "python"}
+)
+</pre>
+
+<h3 id="chromadb-recovery">Corrupted Database Recovery</h3>
+<p>
+    ChromaDB's SQLite-based storage can occasionally become corrupted (e.g., after a crash). The vector store
+    includes automatic recovery:
+</p>
+<ol>
+    <li>On initialization, attempt to create a <code>PersistentClient</code></li>
+    <li>If it fails with a database error, log a warning</li>
+    <li>Delete the corrupted <code>data/chromadb/</code> directory</li>
+    <li>Create a fresh <code>PersistentClient</code> (data will need re-ingestion)</li>
+</ol>
+<pre>
+try:
+    self._client = chromadb.PersistentClient(path=self._persist_dir)
+except Exception as e:
+    logger.warning(f"ChromaDB corrupted, resetting: {e}")
+    shutil.rmtree(self._persist_dir, ignore_errors=True)
+    self._client = chromadb.PersistentClient(path=self._persist_dir)
+</pre>
+
+<!-- ── Ingestion Pipeline ── -->
+<h2 id="ingestion-pipeline">Ingestion Pipeline</h2>
+<p><strong>File:</strong> <code>rag_system/core/ingestion/pipeline.py</code> (315 lines)</p>
+
+<p>
+    The <strong>IngestionPipeline</strong> is the orchestrator that ties all the pieces together. When you click
+    "Add" on a documentation source in the Dashboard, this is the class that runs the end-to-end process.
+</p>
+
+<h3>Ingestion Flow (step by step)</h3>
+<ol>
+    <li><strong>Receive request:</strong> API endpoint calls <code>pipeline.ingest(doc_id)</code></li>
+    <li><strong>Look up source:</strong> Registry provides the <code>DocSource</code> with type and paths</li>
+    <li><strong>Update status:</strong> Registry status &rarr; <code>in_progress</code></li>
+    <li><strong>Fetch content:</strong> Based on <code>source_type</code>:
+        <ul>
+            <li><code>preembedded_file</code>: Read .txt file from disk</li>
+            <li><code>scraped_json</code>: Parse .json file from disk</li>
+            <li><code>web_scrape</code>: Fetch URL via document processor</li>
+            <li><code>file_upload</code>: Read uploaded file via document processor</li>
+        </ul>
+    </li>
+    <li><strong>Chunk content:</strong> Pass text to <code>SmartChunker.chunk_document()</code></li>
+    <li><strong>Clean old data:</strong> Delete any existing chunks for this doc_id from vector store</li>
+    <li><strong>Embed &amp; store:</strong> Pass chunks to <code>VectorStore.add_documents()</code></li>
+    <li><strong>Update registry:</strong> Status &rarr; <code>completed</code>, set chunk_count and timestamp</li>
+    <li><strong>Handle errors:</strong> If anything fails, status &rarr; <code>failed</code> with error message</li>
+</ol>
+
+<h3>Progress Tracking</h3>
+<p>
+    The pipeline tracks progress (percentage complete) during ingestion. The frontend polls
+    <code>GET /docs/{id}/progress</code> every 1.5 seconds to show a progress indicator.
+</p>
+
+<h3>Async Design</h3>
+<p>
+    The <code>ingest()</code> method is <code>async</code>. When triggered via the API, it runs as a
+    background task using FastAPI's <code>BackgroundTasks</code>, so the API response returns immediately
+    and ingestion proceeds asynchronously.
+</p>
+
+<div class="info-box">
+    <strong>Important:</strong> Use <code>SmartChunker.chunk_document()</code> (singular) in async contexts,
+    not <code>chunk_documents()</code>. The singular method is the async-compatible version.
+</div>
+
+<!-- ── LLM Handler ── -->
+<h2 id="llm-handler">LLM Handler (Multi-Provider)</h2>
+<p><strong>File:</strong> <code>rag_system/core/generation/llm_handler.py</code> (311 lines)</p>
+
+<p>
+    The <strong>EnhancedLLMHandler</strong> is the component that generates answers. It supports three LLM
+    providers and can switch between them at runtime.
+</p>
+
+<h3>Supported Providers</h3>
+<table>
+    <tr><th>Provider</th><th>Default Model</th><th>Requirements</th><th>Best For</th></tr>
+    <tr><td><span class="badge badge-green">Ollama</span></td><td>gemma2:2b</td><td>Ollama running locally</td><td>Free, private, no API key needed</td></tr>
+    <tr><td><span class="badge badge-blue">OpenAI</span></td><td>gpt-3.5-turbo</td><td>OPENAI_API_KEY</td><td>High quality answers</td></tr>
+    <tr><td><span class="badge badge-orange">Gemini</span></td><td>gemini-pro</td><td>GEMINI_API_KEY</td><td>Google's LLM alternative</td></tr>
+</table>
+
+<h3>How Answer Generation Works</h3>
+<ol>
+    <li><strong>Receive question</strong> + retrieved chunks from the vector store</li>
+    <li><strong>Build prompt:</strong> System prompt instructs the LLM to answer based on provided context</li>
+    <li><strong>Inject context:</strong> Retrieved chunks are formatted and inserted into the prompt</li>
+    <li><strong>Call LLM:</strong> Send the prompt to the active provider</li>
+    <li><strong>Parse response:</strong> Extract the answer text</li>
+    <li><strong>Attach citations:</strong> Include the source chunks used</li>
+</ol>
+
+<h3>Response Modes</h3>
+<p>The LLM handler supports different response modes that alter the system prompt:</p>
+<ul>
+    <li><strong>Smart Answer:</strong> Concise, direct answer with key points</li>
+    <li><strong>Code Generation:</strong> Focus on producing working code examples</li>
+    <li><strong>Detailed Sources:</strong> Verbose answer with extensive source citations</li>
+</ul>
+
+<h3>Provider Switching</h3>
+<p>
+    Users can switch providers at runtime via the Q&A settings sidebar or the
+    <code>POST /providers/switch</code> API endpoint. The handler validates the provider
+    name and reconfigures the underlying LLM client.
+</p>
+
+<!-- ── Web Search ── -->
+<h2 id="web-search">Web Search Augmentation</h2>
+<p><strong>File:</strong> <code>rag_system/core/search/web_search.py</code> (425 lines)</p>
+
+<p>
+    The <strong>WebSearchProvider</strong> optionally augments RAG answers with live web results.
+    When enabled, it searches the web for the user's question and includes relevant results
+    as additional context alongside the vector store results.
+</p>
+
+<h3>Search Providers</h3>
+<table>
+    <tr><th>Provider</th><th>Requirements</th><th>Quality</th></tr>
+    <tr><td>Firecrawl</td><td>FIRECRAWL_API_KEY</td><td>Higher quality (extracts full page content)</td></tr>
+    <tr><td>DuckDuckGo</td><td>None (free)</td><td>Snippet-based (search result previews only)</td></tr>
+</table>
+
+<p>
+    If Firecrawl is configured, it's used as the primary provider. Otherwise, DuckDuckGo is used as
+    a free fallback. Web search is optional and can be toggled on/off in the Q&A settings sidebar.
+</p>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--                  BACKEND API                          -->
+<!-- ══════════════════════════════════════════════════════ -->
+
+<h2 id="api-overview">Backend API (FastAPI)</h2>
+<p><strong>File:</strong> <code>rag_system/api/server.py</code> (~666 lines)</p>
+
+<p>
+    The FastAPI backend exposes 17 REST endpoints that the frontend (and any external client) uses.
+    It runs on port 8100 with CORS configured for the Next.js dev server at <code>http://localhost:3000</code>.
+</p>
+
+<h3 id="api-factory">App Factory Pattern</h3>
+<p>
+    The FastAPI app uses a <strong>factory pattern</strong> with <strong>deferred imports</strong>.
+    Heavy dependencies (ChromaDB, sentence-transformers, etc.) are only imported when
+    <code>create_enhanced_fastapi_app()</code> is called, not at module import time.
+</p>
+<pre>
+# rag_system/api/server.py
+_app = None
+
+def create_enhanced_fastapi_app():
+    global _app
+    if _app is not None:
+        return _app
+
+    # Heavy imports happen HERE, not at module top
+    from rag_system.core.retrieval import VectorStore
+    from rag_system.core.chunking import SmartChunker
+    # ... etc.
+
+    app = FastAPI(title="DocuMentor API")
+    # ... register routes ...
+    _app = app
+    return app
+</pre>
+
+<p>
+    This pattern means <code>import rag_system.api.server</code> is fast and doesn't trigger
+    ChromaDB initialization &mdash; important for testing and for the module system.
+</p>
+
+<h2 id="api-endpoints">All API Endpoints</h2>
+
+<h3>Documentation Management</h3>
+<table>
+    <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+    <tr><td><span class="badge badge-blue">GET</span></td><td><code>/docs/catalog</code></td><td>List all available documentation sources with their status</td></tr>
+    <tr><td><span class="badge badge-blue">GET</span></td><td><code>/docs/ingested</code></td><td>List only successfully ingested sources</td></tr>
+    <tr><td><span class="badge badge-blue">GET</span></td><td><code>/docs/{doc_id}/status</code></td><td>Get current status of a specific source</td></tr>
+    <tr><td><span class="badge badge-green">POST</span></td><td><code>/docs/{doc_id}/ingest</code></td><td>Start ingestion of a documentation source (async background task)</td></tr>
+    <tr><td><span class="badge badge-blue">GET</span></td><td><code>/docs/{doc_id}/progress</code></td><td>Get ingestion progress (0-100%) for an in-progress source</td></tr>
+    <tr><td><span class="badge badge-red">DELETE</span></td><td><code>/docs/{doc_id}/remove</code></td><td>Remove a source and all its chunks from the vector store</td></tr>
+    <tr><td><span class="badge badge-green">POST</span></td><td><code>/docs/custom</code></td><td>Add a new documentation source via URL</td></tr>
+    <tr><td><span class="badge badge-green">POST</span></td><td><code>/upload</code></td><td>Upload a file (multipart/form-data) as a new documentation source</td></tr>
+</table>
+
+<h3>Question Answering</h3>
+<table>
+    <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+    <tr><td><span class="badge badge-green">POST</span></td><td><code>/question</code></td><td>Ask a question, get an answer with source citations</td></tr>
+    <tr><td><span class="badge badge-green">POST</span></td><td><code>/generate-code</code></td><td>Generate code based on documentation context</td></tr>
+</table>
+
+<h3>System &amp; Configuration</h3>
+<table>
+    <tr><th>Method</th><th>Endpoint</th><th>Description</th></tr>
+    <tr><td><span class="badge badge-blue">GET</span></td><td><code>/status</code></td><td>System health: total chunks, providers, uptime</td></tr>
+    <tr><td><span class="badge badge-blue">GET</span></td><td><code>/technologies</code></td><td>Per-technology chunk counts</td></tr>
+    <tr><td><span class="badge badge-blue">GET</span></td><td><code>/providers</code></td><td>List available LLM providers and which is active</td></tr>
+    <tr><td><span class="badge badge-green">POST</span></td><td><code>/providers/switch</code></td><td>Switch active LLM provider</td></tr>
+    <tr><td><span class="badge badge-blue">GET</span></td><td><code>/health</code></td><td>Simple health check (returns "ok")</td></tr>
+</table>
+
+<h2 id="api-models">Request/Response Models</h2>
+
+<h3>Question Request</h3>
+<pre>
+POST /question
+{
+  "question": "How do list comprehensions work in Python?",
+  "technology_filter": ["python"],    // Optional: limit search to these sources
+  "search_k": 5,                      // Number of chunks to retrieve
+  "web_search": false,                // Enable web search augmentation
+  "response_mode": "smart_answer"     // "smart_answer" | "code_generation" | "detailed_sources"
+}
+</pre>
+
+<h3>Question Response</h3>
+<pre>
+{
+  "answer": "List comprehensions provide a concise way to create lists...",
+  "sources": [
+    {
+      "content": "A list comprehension consists of brackets...",
+      "metadata": {
+        "technology": "python",
+        "source": "Python Documentation",
+        "chunk_index": 12
+      },
+      "relevance_score": 0.87
+    }
+  ],
+  "web_results": [],
+  "provider_used": "ollama",
+  "model_used": "gemma2:2b"
+}
+</pre>
+
+<h3>Custom Doc Request</h3>
+<pre>
+POST /docs/custom
+{
+  "url": "https://docs.example.com/guide",
+  "name": "Example Guide",
+  "category": "Custom"
+}
+</pre>
+
+<h3>Upload Response</h3>
+<pre>
+POST /upload  (multipart/form-data, field: "file")
+Response:
+{
+  "doc_id": "upload_example_guide_pdf",
+  "name": "example_guide.pdf",
+  "message": "File uploaded and registered. Use /docs/{doc_id}/ingest to process."
+}
+</pre>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--                    FRONTEND                           -->
+<!-- ══════════════════════════════════════════════════════ -->
+
+<h2 id="frontend-overview">Frontend (Next.js)</h2>
+<p>
+    The frontend is a <strong>Next.js 14</strong> application using the <strong>App Router</strong>, built with
+    TypeScript, Tailwind CSS, and shadcn/ui. It provides two main pages:
+</p>
+<ul>
+    <li><strong>/dashboard</strong> &mdash; Admin page for managing documentation sources</li>
+    <li><strong>/qa</strong> &mdash; Chat interface for asking questions about ingested documentation</li>
+</ul>
+
+<h3>Frontend &harr; Backend Communication</h3>
+<p>
+    All communication is done via HTTP <code>fetch()</code> calls to the FastAPI backend at
+    <code>http://127.0.0.1:8100</code>. There is no server-side rendering of data &mdash; all API
+    calls happen client-side in React components and hooks.
+</p>
+
+<h2 id="frontend-api-client">API Client (<code>frontend/src/lib/api.ts</code>)</h2>
+<p>
+    The API client is a single file containing typed <code>fetch</code> wrappers for every backend endpoint.
+    It centralizes all HTTP communication so components don't make raw fetch calls.
+</p>
+
+<h3>Key Functions</h3>
+<pre>
+const BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? 'http://127.0.0.1:8100';
+
+// Documentation management
+getCatalog()              → GET  /docs/catalog
+getIngested()             → GET  /docs/ingested
+getDocStatus(id)          → GET  /docs/{id}/status
+ingestDoc(id)             → POST /docs/{id}/ingest
+getProgress(id)           → GET  /docs/{id}/progress
+removeDoc(id)             → DELETE /docs/{id}/remove
+addCustomDoc(url, name, category) → POST /docs/custom
+uploadDocument(file)      → POST /upload (multipart)
+
+// Q&A
+askQuestion(request)      → POST /question
+generateCode(request)     → POST /generate-code
+
+// System
+getSystemStatus()         → GET  /status
+getTechnologies()         → GET  /technologies
+getProviders()            → GET  /providers
+switchProvider(provider)  → POST /providers/switch
+</pre>
+
+<h2 id="frontend-types">TypeScript Types (<code>frontend/src/lib/types.ts</code>)</h2>
+<p>
+    All API request/response types are defined here, mirroring the FastAPI Pydantic models. This ensures
+    type safety throughout the frontend.
+</p>
+<pre>
+// Mirrors Python IngestionStatus enum
+type IngestionStatus = 'not_started' | 'in_progress' | 'completed' | 'failed';
+
+// Mirrors Python DocSourceType enum
+type DocSourceType = 'preembedded_file' | 'scraped_json' | 'web_scrape' | 'file_upload';
+
+// Mirrors Python DocSource model
+interface DocSource {
+  id: string;
+  name: string;
+  category: string;
+  icon: string;
+  source_type: DocSourceType;
+  source_paths: string[];
+  status: IngestionStatus;
+  chunk_count: number;
+  last_ingested: string | null;
+  error_message: string | null;
+}
+
+// Q&A request
+interface QuestionRequest {
+  question: string;
+  technology_filter?: string[];
+  search_k?: number;
+  web_search?: boolean;
+  response_mode?: 'smart_answer' | 'code_generation' | 'detailed_sources';
+}
+</pre>
+
+<h2 id="frontend-hooks">Custom Hooks</h2>
+
+<h3><code>useDocSources</code> &mdash; Catalog Data Management</h3>
+<p><strong>File:</strong> <code>frontend/src/hooks/useDocSources.ts</code></p>
+<p>
+    Manages the document catalog state. Fetches all sources on mount, provides functions to trigger
+    ingestion and removal, and re-fetches after mutations.
+</p>
+<pre>
+const { sources, loading, error, refetch, ingestDoc, removeDoc } = useDocSources();
+// sources: DocSource[]  — all documentation sources with their current status
+// ingestDoc(id): triggers ingestion and refreshes the list
+// removeDoc(id): removes a source and refreshes the list
+</pre>
+
+<h3><code>useIngestion</code> &mdash; Progress Polling</h3>
+<p><strong>File:</strong> <code>frontend/src/hooks/useIngestion.ts</code></p>
+<p>
+    When a documentation source enters <code>in_progress</code> state, this hook starts polling
+    <code>GET /docs/{id}/progress</code> every <strong>1.5 seconds</strong> and returns the current
+    percentage. Polling stops when status changes to <code>completed</code> or <code>failed</code>.
+</p>
+<pre>
+const { progress, isIngesting } = useIngestion(docId);
+// progress: number (0-100)
+// isIngesting: boolean
+</pre>
+
+<h3><code>useChat</code> &mdash; Chat State Management</h3>
+<p><strong>File:</strong> <code>frontend/src/hooks/useChat.ts</code></p>
+<p>
+    Manages the Q&A chat state: message history, loading indicator, and functions to send messages
+    and clear the conversation.
+</p>
+<pre>
+const { messages, isLoading, sendMessage, clearChat } = useChat();
+// messages: { role: 'user' | 'assistant', content: string, sources?: Source[] }[]
+// sendMessage(request): sends question to API, appends both user + assistant messages
+// clearChat(): resets message history
+</pre>
+
+<h2 id="frontend-dashboard">Dashboard Page</h2>
+<p><strong>File:</strong> <code>frontend/src/app/dashboard/page.tsx</code></p>
+
+<p>The Dashboard is the admin interface for managing documentation sources. It consists of:</p>
+
+<h3>Catalog Grid</h3>
+<p>
+    Displays all documentation sources from <code>/docs/catalog</code> as cards, grouped by category.
+    Each card shows:
+</p>
+<ul>
+    <li><strong>Name</strong> and <strong>icon</strong> of the documentation source</li>
+    <li><strong>Status badge</strong> &mdash; color-coded:
+        <span class="badge badge-green">completed</span>
+        <span class="badge badge-orange">in_progress</span>
+        <span class="badge badge-red">failed</span>
+        <span style="background: #374151; color: #9ca3af; display: inline-block; padding: 0.15rem 0.6rem; border-radius: 12px; font-size: 0.72rem; font-weight: 600;">not_started</span>
+    </li>
+    <li><strong>Chunk count</strong> (for ingested sources)</li>
+    <li><strong>Action button:</strong> "Add" (to ingest), "Remove" (to delete), or "Retry" (after failure)</li>
+</ul>
+
+<h3>Add URL Form</h3>
+<p>
+    Allows adding a new documentation source by entering a URL, display name, and category.
+    Calls <code>POST /docs/custom</code> to register the source, then the user can ingest it.
+</p>
+
+<h3>File Upload Form</h3>
+<p>
+    Drag-and-drop file uploader. Accepts supported file formats, uploads via <code>POST /upload</code>
+    (multipart/form-data), then registers the file as a new documentation source.
+</p>
+
+<h3>Stats Panel</h3>
+<p>
+    Shows system-wide statistics: total chunks across all sources, per-technology chunk counts,
+    and active LLM provider information. Fetches from <code>/status</code> and <code>/technologies</code>.
+</p>
+
+<h2 id="frontend-qa">Q&A Page</h2>
+<p><strong>File:</strong> <code>frontend/src/app/qa/page.tsx</code></p>
+
+<p>The Q&A page is a chat interface where users ask questions about ingested documentation.</p>
+
+<h3>Settings Sidebar (Left Panel)</h3>
+<p>Controls for customizing the Q&A behavior:</p>
+<ul>
+    <li><strong>LLM Provider:</strong> Dropdown to switch between Ollama/OpenAI/Gemini</li>
+    <li><strong>Response Mode:</strong> Smart Answer, Code Generation, or Detailed Sources</li>
+    <li><strong>Technology Filter:</strong> Multi-select to limit search to specific ingested technologies</li>
+    <li><strong>Search K:</strong> Slider (3-15) to control how many chunks are retrieved</li>
+    <li><strong>Web Search:</strong> Toggle to enable/disable web search augmentation</li>
+</ul>
+
+<h3>Chat Interface (Main Area)</h3>
+<ul>
+    <li><strong>Message list:</strong> Scrollable area showing conversation history</li>
+    <li><strong>User messages:</strong> Right-aligned bubbles</li>
+    <li><strong>Assistant messages:</strong> Left-aligned bubbles with the answer text</li>
+    <li><strong>Source citations:</strong> Expandable panel below each assistant message showing the chunks that informed the answer</li>
+    <li><strong>Input area:</strong> Text input with Send button (also submits on Enter)</li>
+    <li><strong>Clear Chat:</strong> Button to reset the conversation</li>
+</ul>
+
+<hr>
+
+<!-- ══════════════════════════════════════════════════════ -->
+<!--                    ADVANCED                           -->
+<!-- ══════════════════════════════════════════════════════ -->
+
+<h2 id="lazy-imports">Lazy Import Pattern</h2>
+<p>
+    DocuMentor uses a <strong>lazy import pattern</strong> in its core module to avoid heavy import-time side effects.
+    Without this, simply importing <code>rag_system.core</code> would trigger ChromaDB initialization,
+    download embedding models, etc.
+</p>
+
+<h3>How It Works</h3>
+<p>
+    The <code>rag_system/core/__init__.py</code> file uses Python's <code>__getattr__</code> hook.
+    Attributes are only imported when first accessed:
+</p>
+<pre>
+# rag_system/core/__init__.py
+
+_LAZY_IMPORTS = {
+    "SmartChunker": "rag_system.core.chunking",
+    "ChromaVectorStore": "rag_system.core.retrieval.vector_store",
+    "VectorStore": "rag_system.core.retrieval.vector_store",
+    # ... etc.
+}
+
+def __getattr__(name):
+    if name in _LAZY_IMPORTS:
+        module = importlib.import_module(_LAZY_IMPORTS[name])
+        attr = getattr(module, name)
+        globals()[name] = attr    # Cache for next access
+        return attr
+    raise AttributeError(f"module 'rag_system.core' has no attribute '{name}'")
+</pre>
+
+<h3>Why This Matters</h3>
+<ul>
+    <li><strong>Fast imports:</strong> <code>import rag_system</code> is near-instant</li>
+    <li><strong>Test-friendly:</strong> Tests can mock modules before they're imported</li>
+    <li><strong>Selective loading:</strong> Only used components are initialized</li>
+</ul>
+
+<div class="warn-box">
+    <strong>Testing Note:</strong> When mocking these lazy imports in tests, you must patch at the
+    <em>subpackage re-export level</em>, not the source module level. For example, patch
+    <code>rag_system.core.retrieval.VectorStore</code>, not <code>rag_system.core.retrieval.vector_store.ChromaVectorStore</code>.
+</div>
+
+<h2 id="caching">Caching System</h2>
+<p>DocuMentor implements two layers of caching:</p>
+
+<h3>1. Embedding Cache</h3>
+<p>
+    Stored in <code>data/embeddings_cache/</code>. The <code>CachedEmbeddingFunction</code> in the vector store
+    caches computed embeddings keyed by text content hash. Re-ingesting unchanged text reuses cached embeddings.
+</p>
+
+<h3>2. Response Cache</h3>
+<p>
+    Stored in <code>data/cache/</code>. LLM responses can be cached keyed by the question + settings combination.
+    This avoids redundant LLM API calls for identical questions.
+</p>
+
+<h2 id="testing">Testing</h2>
+<p>
+    The project has a comprehensive test suite with <strong>167 tests</strong> using pytest.
+</p>
+
+<h3>Running Tests</h3>
+<pre>
+# Run all tests
+pytest tests/
+
+# Run with verbose output
+pytest tests/ -v
+
+# Run a specific test file
+pytest tests/test_chunker.py
+
+# Run tests matching a pattern
+pytest tests/ -k "test_search"
+</pre>
+
+<h3>Test Files</h3>
+<table>
+    <tr><th>File</th><th>Tests</th><th>Coverage</th></tr>
+    <tr><td><code>test_api_endpoints.py</code></td><td>38</td><td>All 17 API endpoints, error handling, CORS</td></tr>
+    <tr><td><code>test_chunker.py</code></td><td>~20</td><td>Chunk sizes, code block handling, overlap, metadata</td></tr>
+    <tr><td><code>test_vector_store.py</code></td><td>~20</td><td>Add, search, delete, filter, recovery</td></tr>
+    <tr><td><code>test_registry.py</code></td><td>~20</td><td>State management, persistence, dynamic additions</td></tr>
+    <tr><td><code>test_ingestion.py</code></td><td>~20</td><td>Pipeline orchestration, all source types, error handling</td></tr>
+    <tr><td><code>test_llm_handler.py</code></td><td>~20</td><td>Provider switching, prompt building, response modes</td></tr>
+    <tr><td><code>test_cache.py</code></td><td>~20</td><td>Cache hits/misses, expiration, invalidation</td></tr>
+</table>
+
+<h3>Test Fixtures</h3>
+<p>
+    Shared fixtures are defined in <code>tests/conftest.py</code>. They provide:
+</p>
+<ul>
+    <li><code>mock_vector_store</code> &mdash; Mocked ChromaVectorStore (no real ChromaDB needed)</li>
+    <li><code>mock_registry</code> &mdash; Mocked DocRegistry with sample sources</li>
+    <li><code>mock_llm_handler</code> &mdash; Mocked LLM that returns predictable answers</li>
+    <li><code>sample_doc_sources</code> &mdash; List of sample DocSource objects for testing</li>
+</ul>
+
+<h2 id="deployment">Deployment</h2>
+
+<h3>Development</h3>
+<pre>
+# Start everything
+python launcher.py
+
+# This runs:
+# 1. uvicorn rag_system.api.server:app --host 127.0.0.1 --port 8100
+# 2. cd frontend && npm run dev (port 3000)
+</pre>
+
+<h3>Production</h3>
+<ol>
+    <li>Build the frontend:
+        <pre>cd frontend && npm run build</pre>
+    </li>
+    <li>Run the FastAPI backend with a production server:
+        <pre>uvicorn rag_system.api.server:app --host 0.0.0.0 --port 8100 --workers 4</pre>
+    </li>
+    <li>Serve the built frontend with any static file server or <code>npm start</code></li>
+    <li>Set environment variables for production LLM provider and API keys</li>
+</ol>
+
+<div class="warn-box">
+    <strong>Production note:</strong> For production deployments, configure a proper CORS origin
+    in <code>rag_system/config/settings.py</code> instead of <code>localhost:3000</code>.
+</div>
+
+<h2 id="troubleshooting">Troubleshooting</h2>
+
+<h3>Common Issues</h3>
+
+<h4>ChromaDB: "database disk image is malformed"</h4>
+<p>
+    This means the SQLite database used by ChromaDB got corrupted. The system handles this automatically
+    by deleting and recreating the database. If the automatic recovery doesn't work:
+</p>
+<pre>
+# Delete the ChromaDB directory manually
+rm -rf data/chromadb/
+
+# Re-ingest your documentation
+# (use the Dashboard or API to trigger ingestion for each source)
+</pre>
+
+<h4>Ollama connection refused</h4>
+<p>Make sure Ollama is running:</p>
+<pre>
+ollama serve
+# In another terminal, verify:
+curl http://localhost:11434/api/tags
+</pre>
+
+<h4>Frontend can't reach backend (CORS error)</h4>
+<p>
+    Ensure the FastAPI backend is running on port 8100 and that <code>http://localhost:3000</code>
+    is in the CORS allowed origins list in <code>rag_system/config/settings.py</code>.
+</p>
+
+<h4>Embedding model download takes too long</h4>
+<p>
+    The first time the system runs, it downloads the <code>all-MiniLM-L6-v2</code> model (~80MB).
+    This is a one-time download. Subsequent starts use the cached model.
+</p>
+
+<h4>Tests fail with "module has no attribute" errors</h4>
+<p>
+    This usually means test patches are targeting the wrong module path. Due to the lazy import pattern,
+    patches must target the <em>re-exported</em> names:
+</p>
+<pre>
+# CORRECT
+patch("rag_system.core.retrieval.VectorStore", ...)
+patch("rag_system.core.chunking.SmartChunker", ...)
+
+# WRONG (these names don't exist on the package namespace)
+patch("rag_system.core.retrieval.ChromaVectorStore", ...)
+patch("rag_system.core.retrieval.vector_store.ChromaVectorStore", ...)
+</pre>
+
+<h4>Port already in use</h4>
+<pre>
+# Find and kill the process using port 8100 (Linux/Mac)
+lsof -i :8100
+kill -9 &lt;PID&gt;
+
+# On Windows
+netstat -ano | findstr :8100
+taskkill /PID &lt;PID&gt; /F
+</pre>
+
+<hr>
+
+<div class="success-box">
+    <strong>That's everything!</strong> You now have a complete understanding of how DocuMentor works,
+    from raw documentation files to generated answers. If you have questions, check the API docs
+    at <code>http://localhost:8100/docs</code> (auto-generated by FastAPI) or browse the source code.
+</div>
+
+</main>
+</body>
+</html>

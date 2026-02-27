@@ -1,69 +1,49 @@
 #!/usr/bin/env python3
 """
-Enhanced RAG System v2 - Main Entry Point
-Advanced version with improved performance and features
+DocuMentor - Main Entry Point
+
+The Streamlit UI has been replaced with a Next.js TypeScript frontend.
+
+To start the system:
+  python launcher.py           # Start both FastAPI + Next.js
+  python api_server.py         # Start FastAPI only (port 8100)
+  cd frontend && npm run dev   # Start Next.js only (port 3000)
+
+Access:
+  Web UI   -> http://localhost:3000
+  API Docs -> http://localhost:8100/docs
 """
 
 import sys
-import argparse
+import subprocess
 from pathlib import Path
 
-# Add the project root to the path
 project_root = Path(__file__).parent
-sys.path.insert(0, str(project_root))
+frontend_dir = project_root / "frontend"
 
-def start_web_interface(port: int = 8506):
-    """Start the web interface using Streamlit"""
-    import streamlit.web.cli as stcli
-
-    # Path to the web app
-    app_path = project_root / "rag_system" / "web" / "app.py"
-
-    # Streamlit arguments
-    sys.argv = [
-        "streamlit",
-        "run",
-        str(app_path),
-        "--server.port", str(port),
-        "--server.address", "127.0.0.1",
-        "--server.headless", "true",
-        "--browser.gatherUsageStats", "false",
-        "--theme.base", "light"
-    ]
-
-    # Run Streamlit
-    stcli.main()
 
 def main():
-    """Main entry point"""
-    parser = argparse.ArgumentParser(description="DocuMentor - AI Documentation Assistant")
-    parser.add_argument(
-        "--port",
-        type=int,
-        default=8506,
-        help="Port to run the Streamlit app on (default: 8506)"
-    )
+    print("DocuMentor - AI Documentation Assistant")
+    print("=" * 50)
+    print()
+    print("The UI is now a Next.js TypeScript app in frontend/")
+    print()
+    print("To start everything:    python launcher.py")
+    print("To start API only:      python api_server.py")
+    print("To start frontend only: cd frontend && npm run dev")
+    print()
+    print("Access:")
+    print("  Web UI   -> http://localhost:3000")
+    print("  API Docs -> http://localhost:8100/docs")
+    print()
 
-    args = parser.parse_args()
+    # Offer to launch frontend directly
+    if len(sys.argv) > 1 and sys.argv[1] == "--frontend":
+        print("Starting Next.js frontend...")
+        subprocess.run(["npm", "run", "dev"], cwd=str(frontend_dir), shell=True)
+    else:
+        print("Tip: run 'python launcher.py' to start both servers.")
 
-    print(f">> Starting DocuMentor on port {args.port}")
-    print("Features:")
-    print("  >> Smart documentation search and analysis")
-    print("  >> AI-powered code generation with context")
-    print("  >> Technology-specific filtering (9+ frameworks)")
-    print("  >> Real-time web search integration")
-    print("  >> Modern UI with dark/light mode toggle")
-    print("  >> Multi-provider AI support (Ollama, OpenAI, etc)")
-    print(f"\n>> Open your browser to: http://127.0.0.1:{args.port}")
-    print("=" * 60)
-
-    try:
-        start_web_interface(args.port)
-    except KeyboardInterrupt:
-        print("\n>> DocuMentor stopped")
-    except Exception as e:
-        print(f"ERROR: Error starting DocuMentor: {e}")
-        sys.exit(1)
 
 if __name__ == "__main__":
     main()
